@@ -1,9 +1,9 @@
 # Tooling for maintainers only: executing and validating notebooks, rebuilding the
 # decks, and linting. Students never need this file.
 -r requirements.txt
-nbformat>=5.9
-nbconvert>=7.10
-ipykernel>=6.29
-httpx>=0.27
-python-pptx>=1.0
-ruff>=0.5
+nbformat>=5.11.1
+nbconvert>=7.17.1
+ipykernel>=7.3.0
+httpx>=0.28.1
+python-pptx>=1.0.2
+ruff>=0.16.8

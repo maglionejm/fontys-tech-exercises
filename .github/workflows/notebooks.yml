@@ -35,7 +35,7 @@ jobs:
           - "M3 - ML Architectures and Deployment/02-deploying-models-in-the-cloud.ipynb"
           - "M3 - ML Architectures and Deployment/03-consuming-models-from-applications.ipynb"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"

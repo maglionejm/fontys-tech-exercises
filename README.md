@@ -6,7 +6,7 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-1E5EF3.svg)](requirements.txt)
 [![License: MIT](https://img.shields.io/badge/license-MIT-0A2540.svg)](LICENSE)
 
-A hands-on Python course for learning data analytics and machine learning from zero. Three modules, nine notebooks, four teaching decks, one dataset, and one guiding principle: **keep it simple**. Every notebook balances short theory blocks with immediate practice, explains every technical term the first time it appears, and ends with exercises plus worked solutions.
+A hands-on Python course for learning data analytics and machine learning from zero. Four modules, ten notebooks, five teaching decks, one dataset, and one guiding principle: **keep it simple**. Every notebook balances short theory blocks with immediate practice, explains every technical term the first time it appears, and ends with exercises plus worked solutions.
 
 Everything runs **in Google Colab with one click** or **locally**. No accounts, no API keys, no configuration files. All datasets load automatically from public sources.
 
@@ -20,9 +20,9 @@ Everything runs **in Google Colab with one click** or **locally**. No accounts, 
 | **A teacher** | Read the [course site](https://maglionejm.github.io/fontys-tech-exercises/) for the storyline, then use the [M2 decks](presentations/) alongside the notebooks. |
 | **A contributor** | Read [CONTRIBUTING.md](CONTRIBUTING.md), run `make setup && make check`, open a pull request. |
 
-## One dataset, nine notebooks
+## One dataset, ten notebooks
 
-Every module works the same passenger list: 891 passengers of the Titanic, twelve columns, 342 survivors. Module 1 cleans and describes it. Module 2 trains a model that predicts who survives and judges it honestly on rows it never saw (test accuracy 0.838). Module 3 puts that model behind an API, into a container, into the cloud, and into an application that calls it. Three real passengers, Owen, Florence and Frankie, return in every session so the numbers always have faces.
+Every module works the same passenger list: 891 passengers of the Titanic, twelve columns, 342 survivors. Module 1 cleans and describes it. Module 2 trains a model that predicts who survives and judges it honestly on rows it never saw (test accuracy 0.838). Module 3 puts that model behind an API, into a container, into the cloud, and into an application that calls it. Module 4 adds the newest tool: a small language model that turns *sentences* about the same passengers into the JSON that model consumes, and the prompts, some written by the model itself, that make it reliable. Three real passengers, Owen, Florence and Frankie, return in every session so the numbers always have faces.
 
 ## Course structure
 
@@ -54,11 +54,19 @@ Goes deeper: how machine learning fits into real tech architectures, how to run 
 | 2 | [Deploying models in the cloud](M3%20-%20ML%20Architectures%20and%20Deployment/02-deploying-models-in-the-cloud.ipynb) | Turning a model into a real prediction API with FastAPI, testing it before shipping, packaging it with Docker, and deploying the same container to Google Cloud Run and AWS App Runner, with step-by-step walkthroughs, cost hygiene and cleanup | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/maglionejm/fontys-tech-exercises/blob/main/M3%20-%20ML%20Architectures%20and%20Deployment/02-deploying-models-in-the-cloud.ipynb) |
 | 3 | [Consuming models from applications](M3%20-%20ML%20Architectures%20and%20Deployment/03-consuming-models-from-applications.ipynb) | The last mile: calling a model API from Python with timeouts, error handling and retries; batch prediction; a working web app that calls the model (usable inside Colab too); CORS; and how third-party AI APIs and their keys fit in. The notebook runs a real server and consumes it over real HTTP | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/maglionejm/fontys-tech-exercises/blob/main/M3%20-%20ML%20Architectures%20and%20Deployment/03-consuming-models-from-applications.ipynb) |
 
-Recommended order: M1, then M2, then M3, each top to bottom. M1 notebook 1, all of M2 and most of M3 use the same Titanic dataset, so concepts carry over naturally.
+### M4 - Prompting and Language Models
+
+Language models read and write words, and the words you send them decide what comes back. This module makes that measurable on the course's own passengers, then lets the model write and improve its own prompts. One teaching deck accompanies it in [`presentations/`](presentations/). A small open model downloads on first run (1.5B parameters, about 3 GB, on a GPU or Apple silicon; 0.5B, about 1 GB, on a plain CPU); no account or key is needed.
+
+| # | Notebook | What you learn | Open in Colab |
+|---|----------|----------------|---------------|
+| 1 | [The power of prompting](M4%20-%20Prompting%20and%20Language%20Models/01-the-power-of-prompting.ipynb) | What a prompt is and why words change the output (in-context learning); the prompt ladder from vague ask to specification, rules, examples and role, scored field by field on real passengers; a dev/test split for prompts; self-generation prompting: the model writes its own examples, checks its own work, writes the instruction (APE) and optimizes it in a loop (OPRO); "big writes, small runs"; the extracted JSON fed into the course's survival model | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/maglionejm/fontys-tech-exercises/blob/main/M4%20-%20Prompting%20and%20Language%20Models/01-the-power-of-prompting.ipynb) |
+
+Recommended order: M1, then M2, then M3, then M4, each top to bottom. M1 notebook 1, all of M2, most of M3 and M4 use the same Titanic dataset, so concepts carry over naturally.
 
 ## Teaching decks
 
-[`presentations/`](presentations/) holds four white-and-blue decks for the M2 sessions, 19 to 24 slides each, in two parts: a theory chapter (frameworks from MIT 6.390, Andrew Ng's courses and Harvard CS109A, plus data-quality and privacy research, all attributed on the slides) followed by practice on the Titanic. The decks are **generated** from Python in `presentations/src/`; every number on a slide comes from an executed notebook or a computation on the course dataset. Rebuild them with `make decks`.
+[`presentations/`](presentations/) holds five white-and-blue decks: four for the M2 sessions and one for M4, 19 to 24 slides each, in two parts: a theory chapter (frameworks from MIT 6.390, Andrew Ng's courses and Harvard CS109A, plus data-quality and privacy research, all attributed on the slides) followed by practice on the Titanic. The decks are **generated** from Python in `presentations/src/`; every number on a slide comes from an executed notebook or a computation on the course dataset. Rebuild them with `make decks`.
 
 ## How to run
 
@@ -67,7 +75,7 @@ Recommended order: M1, then M2, then M3, each top to bottom. M1 notebook 1, all 
 1. Click any *Open In Colab* badge above.
 2. In Colab, choose **Runtime > Run all**.
 
-The first cell of every notebook installs anything missing (on Colab almost everything is preinstalled), and datasets download automatically.
+The first cell of every notebook installs anything missing (on Colab almost everything is preinstalled), and datasets download automatically. For M4, a GPU runtime (**Runtime > Change runtime type > T4 GPU**) makes the language model several times faster; it also runs on a plain CPU.
 
 ### Option B - Locally
 
@@ -84,7 +92,7 @@ pip install -r requirements.txt
 jupyter lab
 ```
 
-Open any notebook and run it top to bottom. Each notebook is independent.
+Open any notebook and run it top to bottom. Each notebook is independent. M4 downloads a small open language model from Hugging Face on its first run and caches it (about 3 GB on Apple silicon or a GPU, about 1 GB on a plain CPU).
 
 Maintainers: `make setup` also installs the tooling in `requirements-dev.txt`; `make help` lists every task.
 
@@ -95,6 +103,7 @@ All datasets are small, public, and load automatically:
 - **Titanic passenger list** (891 rows), loaded from a public GitHub URL. Used in M1 notebook 1 and throughout M2 and M3.
 - **Palmer Penguins, tips, Anscombe's quartet**, loaded through `seaborn.load_dataset()`.
 - **Gapminder**, bundled with Plotly.
+- **Qwen2.5-Instruct** (1.5B or 0.5B parameters, chosen by the notebook for your hardware), open language models under the Apache-2.0 license, downloaded from Hugging Face by M4 notebook 1.
 
 ## Repository layout
 
@@ -103,7 +112,8 @@ fontys-tech-exercises/
 ├── M1 - Descriptive analytics/            3 notebooks
 ├── M2 - Machine Learning/                 3 notebooks
 ├── M3 - ML Architectures and Deployment/  3 notebooks
-├── presentations/                         4 generated M2 decks + builders (src/)
+├── M4 - Prompting and Language Models/    1 notebook
+├── presentations/                         5 generated decks (M2 sessions, M4) + builders (src/)
 ├── docs/                                  the course site (GitHub Pages)
 ├── scripts/                               maintainer checks: notebook format, outputs, secrets, execution
 ├── .github/                               CI, notebook execution, Pages deploy, templates, CODEOWNERS, Dependabot
@@ -121,7 +131,7 @@ When you run the notebooks, they create an `outputs/` folder next to themselves 
 
 - **Every notebook is executed** in a clean environment by the *Execute notebooks* workflow: on pull requests that touch notebooks, weekly, and on demand.
 - **Every commit is scanned** for secrets across the full history, and a static check rejects notebooks whose code, outputs or metadata contain key patterns or local paths.
-- **No secrets by design.** Nothing here needs an API key, a `.env` file or a login. The optional *publish to the internet* guides (Hugging Face Spaces in M2, Google Cloud and AWS in M3) use the providers' web consoles and never embed tokens. See [SECURITY.md](SECURITY.md).
+- **No secrets by design.** Nothing here needs an API key, a `.env` file or a login. M4's optional frontier-model section is off by default; when a student switches it on, it asks for a key at run time and never stores it. The optional *publish to the internet* guides (Hugging Face Spaces in M2, Google Cloud and AWS in M3) use the providers' web consoles and never embed tokens. See [SECURITY.md](SECURITY.md).
 - **Notebooks ship with outputs**, so every chart and table is readable on GitHub without running anything. Interactive Plotly charts render when you run the notebook.
 
 ## Contributing

@@ -4,7 +4,7 @@
 #   make setup           create .venv with runtime + maintainer tooling
 #   make check           fast checks: notebook format/outputs/secrets + lint
 #   make test-notebooks  execute every notebook top to bottom (slow, ~10 min)
-#   make decks           regenerate the four M2 PowerPoint decks
+#   make decks           regenerate the PowerPoint decks (M2 sessions and M4)
 #   make site            preview the GitHub Pages site on http://localhost:8000
 #   make clean           remove generated outputs and caches
 
@@ -38,6 +38,7 @@ test-notebooks: setup
 
 decks: setup
 	cd presentations/src && for n in 1 2 3 4; do ../../$(BIN)/python build_session_$$n.py; done
+	cd presentations/src && ../../$(BIN)/python build_m4_session_1.py
 
 site:
 	$(PY) -m http.server 8000 --directory docs

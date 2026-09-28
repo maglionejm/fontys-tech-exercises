@@ -1,0 +1,338 @@
+{
+  "dev": {
+    "0 vague ask": {
+      "valid_json": 0.0,
+      "field_accuracy": 0.0,
+      "perfect_rows": 0.0
+    },
+    "1 + specification": {
+      "valid_json": 1.0,
+      "field_accuracy": 0.9,
+      "perfect_rows": 0.4
+    },
+    "2 + rules": {
+      "valid_json": 1.0,
+      "field_accuracy": 0.8666666666666667,
+      "perfect_rows": 0.4
+    },
+    "3 + role": {
+      "valid_json": 1.0,
+      "field_accuracy": 0.8666666666666667,
+      "perfect_rows": 0.5
+    },
+    "4 + examples": {
+      "valid_json": 1.0,
+      "field_accuracy": 0.8833333333333333,
+      "perfect_rows": 0.5
+    },
+    "self-examples": {
+      "valid_json": 1.0,
+      "field_accuracy": 0.8666666666666667,
+      "perfect_rows": 0.4
+    },
+    "self-refine": {
+      "valid_json": 1.0,
+      "field_accuracy": 0.85,
+      "perfect_rows": 0.3
+    },
+    "APE best": {
+      "valid_json": 1.0,
+      "field_accuracy": 0.85,
+      "perfect_rows": 0.1
+    },
+    "OPRO best": {
+      "valid_json": 1.0,
+      "field_accuracy": 0.9166666666666666,
+      "perfect_rows": 0.6
+    }
+  },
+  "test": {
+    "0 vague ask": {
+      "valid_json": 0.0,
+      "field_accuracy": 0.0,
+      "perfect_rows": 0.0
+    },
+    "1 + specification": {
+      "valid_json": 1.0,
+      "field_accuracy": 0.8166666666666667,
+      "perfect_rows": 0.2
+    },
+    "2 + rules": {
+      "valid_json": 1.0,
+      "field_accuracy": 0.9,
+      "perfect_rows": 0.5
+    },
+    "3 + role": {
+      "valid_json": 1.0,
+      "field_accuracy": 0.9166666666666666,
+      "perfect_rows": 0.5
+    },
+    "4 + examples": {
+      "valid_json": 1.0,
+      "field_accuracy": 0.9166666666666666,
+      "perfect_rows": 0.5
+    },
+    "self-examples": {
+      "valid_json": 1.0,
+      "field_accuracy": 0.9,
+      "perfect_rows": 0.5
+    },
+    "APE best": {
+      "valid_json": 1.0,
+      "field_accuracy": 0.9,
+      "perfect_rows": 0.5
+    },
+    "OPRO best": {
+      "valid_json": 1.0,
+      "field_accuracy": 0.85,
+      "perfect_rows": 0.3
+    },
+    "self-refine": {
+      "valid_json": 1.0,
+      "field_accuracy": 0.9,
+      "perfect_rows": 0.5
+    }
+  },
+  "best_ape": "The instruction provided was:\n\n\"Take each input name and age along with their respective class, gender, number of siblings/spouses aboard (SibSp), number of parents/children aboard (Parch), and port of embarkation (Embarked). Format them into a JSON object as shown below.\"\n\nHere is how this output format should look:\n\n```json\n{\"Pclass\": <class>, \"Sex\": \"<gender>\", \"Age\": <age>, \"SibSp\": <sibsp>, \"Parch\": < parch>, \"Embarked\": \"<embarked>\"}\n```\n\nThe allowed values are:\n- Pclass: Can be 1, 2 or 3\n- Sex: Can be either \"male\" or \"female\"\n- Age: Must be an integer between 0 and 100 inclusive\n- SibSp: Must be an integer between 0 and 6 inclusive\n- Parch: Must be an integer between 0 and 6 inclusive\n- Embarked: Can be \"C\", \"Q\", or \"S\"\n\nInputs were",
+  "best_opro": "Extract the following fields for each passenger and respond with a single JSON object without any additional text:\n\n- Pclass (integer value representing class, either 1, 2, or 3)\n- Sex (string indicating gender, either \"male\" or \"female\")\n- Age (float value representing age as a number)\n- SibSp (integer value representing number of siblings/spouses aboard)\n- Parch (integer value representing number of parents/children aboard)\n- Embarked (string indicating port of embarkation, either \"S\" for Southampton, \"C\" for Cherbourg, or \"Q\" for Queenstown)\n\nFor each failure example provided, ensure the extracted values match the expected output exactly.\n\nExamples:\n- For \"Mrs. Adele Nasser\":\n  Expected Output: {\"Pclass\": 2, \"Sex\": \"female\", \"Age\": 14, \"SibSp\": 1, \"Parch\": 0, \"Embarked\": \"C\"}\n  Actual Output: ```json \\{ \"Pclass\": 2, \"Sex\": \"female\", \"Age\": 14, \"SibSp\": 1, \"Parch\": 0, \"Embarked\": \"C\" \\}```\n- For \"Six-year-old Meier Moor\":\n  Expected Output: {\"Pclass\": 3, \"Sex\": \"male\", \"Age\": 6, \"SibSp\": 0, \"Parch\":",
+  "opro_best_so_far": [
+    0.8833333333333333,
+    0.9,
+    0.9,
+    0.9166666666666666
+  ],
+  "model": "Qwen/Qwen2.5-1.5B-Instruct",
+  "device": "mps",
+  "fields_dev": {
+    "0 vague ask": {
+      "Pclass": 0.0,
+      "Sex": 0.0,
+      "Age": 0.0,
+      "SibSp": 0.0,
+      "Parch": 0.0,
+      "Embarked": 0.0
+    },
+    "1 + specification": {
+      "Pclass": 1.0,
+      "Sex": 0.9,
+      "Age": 1.0,
+      "SibSp": 0.7,
+      "Parch": 0.8,
+      "Embarked": 1.0
+    },
+    "2 + rules": {
+      "Pclass": 1.0,
+      "Sex": 0.9,
+      "Age": 1.0,
+      "SibSp": 0.5,
+      "Parch": 0.8,
+      "Embarked": 1.0
+    },
+    "3 + role": {
+      "Pclass": 1.0,
+      "Sex": 0.9,
+      "Age": 1.0,
+      "SibSp": 0.6,
+      "Parch": 0.7,
+      "Embarked": 1.0
+    },
+    "4 + examples": {
+      "Pclass": 1.0,
+      "Sex": 0.9,
+      "Age": 1.0,
+      "SibSp": 0.7,
+      "Parch": 0.7,
+      "Embarked": 1.0
+    },
+    "self-examples": {
+      "Pclass": 1.0,
+      "Sex": 0.9,
+      "Age": 1.0,
+      "SibSp": 0.7,
+      "Parch": 0.6,
+      "Embarked": 1.0
+    },
+    "self-refine": {
+      "Pclass": 1.0,
+      "Sex": 0.9,
+      "Age": 1.0,
+      "SibSp": 0.4,
+      "Parch": 0.8,
+      "Embarked": 1.0
+    },
+    "APE best": {
+      "Pclass": 0.9,
+      "Sex": 0.9,
+      "Age": 1.0,
+      "SibSp": 0.5,
+      "Parch": 0.9,
+      "Embarked": 0.9
+    },
+    "OPRO best": {
+      "Pclass": 0.9,
+      "Sex": 1.0,
+      "Age": 1.0,
+      "SibSp": 0.8,
+      "Parch": 0.8,
+      "Embarked": 1.0
+    }
+  },
+  "fields_test": {
+    "0 vague ask": {
+      "Pclass": 0.0,
+      "Sex": 0.0,
+      "Age": 0.0,
+      "SibSp": 0.0,
+      "Parch": 0.0,
+      "Embarked": 0.0
+    },
+    "1 + specification": {
+      "Pclass": 0.9,
+      "Sex": 0.9,
+      "Age": 0.9,
+      "SibSp": 0.6,
+      "Parch": 0.6,
+      "Embarked": 1.0
+    },
+    "2 + rules": {
+      "Pclass": 0.9,
+      "Sex": 0.9,
+      "Age": 1.0,
+      "SibSp": 0.8,
+      "Parch": 0.8,
+      "Embarked": 1.0
+    },
+    "3 + role": {
+      "Pclass": 1.0,
+      "Sex": 0.9,
+      "Age": 1.0,
+      "SibSp": 0.9,
+      "Parch": 0.7,
+      "Embarked": 1.0
+    },
+    "4 + examples": {
+      "Pclass": 1.0,
+      "Sex": 0.9,
+      "Age": 1.0,
+      "SibSp": 0.9,
+      "Parch": 0.7,
+      "Embarked": 1.0
+    },
+    "self-examples": {
+      "Pclass": 1.0,
+      "Sex": 0.9,
+      "Age": 1.0,
+      "SibSp": 0.8,
+      "Parch": 0.7,
+      "Embarked": 1.0
+    },
+    "APE best": {
+      "Pclass": 0.9,
+      "Sex": 0.9,
+      "Age": 1.0,
+      "SibSp": 0.8,
+      "Parch": 0.9,
+      "Embarked": 0.9
+    },
+    "OPRO best": {
+      "Pclass": 0.9,
+      "Sex": 0.9,
+      "Age": 1.0,
+      "SibSp": 0.6,
+      "Parch": 0.7,
+      "Embarked": 1.0
+    },
+    "self-refine": {
+      "Pclass": 0.9,
+      "Sex": 0.9,
+      "Age": 1.0,
+      "SibSp": 0.9,
+      "Parch": 0.7,
+      "Embarked": 1.0
+    }
+  },
+  "ape_board": [
+    {
+      "candidate": 1,
+      "field_accuracy": 0.85,
+      "perfect_rows": 0.1,
+      "valid_json": 1.0
+    },
+    {
+      "candidate": 2,
+      "field_accuracy": 0.7833333333333333,
+      "perfect_rows": 0.2,
+      "valid_json": 1.0
+    },
+    {
+      "candidate": 0,
+      "field_accuracy": 0.3333333333333333,
+      "perfect_rows": 0.0,
+      "valid_json": 1.0
+    },
+    {
+      "candidate": 3,
+      "field_accuracy": 0.16666666666666666,
+      "perfect_rows": 0.0,
+      "valid_json": 1.0
+    },
+    {
+      "candidate": 4,
+      "field_accuracy": 0.15,
+      "perfect_rows": 0.0,
+      "valid_json": 0.5
+    },
+    {
+      "candidate": 5,
+      "field_accuracy": 0.03333333333333333,
+      "perfect_rows": 0.0,
+      "valid_json": 0.2
+    }
+  ],
+  "opro_history": [
+    {
+      "round": 0,
+      "score": 0.8833333333333333
+    },
+    {
+      "round": 0,
+      "score": 0.85
+    },
+    {
+      "round": 1,
+      "score": 0.8833333333333333
+    },
+    {
+      "round": 1,
+      "score": 0.9
+    },
+    {
+      "round": 1,
+      "score": 0.85
+    },
+    {
+      "round": 2,
+      "score": 0.9
+    },
+    {
+      "round": 2,
+      "score": 0.85
+    },
+    {
+      "round": 2,
+      "score": 0.8333333333333334
+    },
+    {
+      "round": 3,
+      "score": 0.9166666666666666
+    },
+    {
+      "round": 3,
+      "score": 0.7666666666666667
+    },
+    {
+      "round": 3,
+      "score": 0.8
+    }
+  ]
+}

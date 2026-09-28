@@ -291,7 +291,7 @@ p { margin: 0 0 1em; }
 .patterns article.active { border-color: var(--survived); box-shadow: inset 0 0 0 1px var(--survived); }
 .patterns h3 { margin-bottom: .4rem; }
 .patterns p:not(.kicker) { color: var(--ink-2); font-size: .92rem; margin: 0; }
-.modules { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.modules { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
 .module { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; }
 .module ol { list-style: none; margin: 0; padding: 0; counter-reset: nb; }
 .module li { counter-increment: nb; padding: 14px 0; border-top: 1px solid var(--line); }

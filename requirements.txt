@@ -23,3 +23,7 @@ fastapi
 uvicorn
 httpx
 requests
+
+# Small open language model (only needed for M4 notebook 1; preinstalled on Colab)
+torch
+transformers

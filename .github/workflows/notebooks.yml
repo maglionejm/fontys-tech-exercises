@@ -20,7 +20,7 @@ jobs:
   execute:
     name: ${{ matrix.notebook }}
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
@@ -34,11 +34,16 @@ jobs:
           - "M3 - ML Architectures and Deployment/01-ml-system-architectures.ipynb"
           - "M3 - ML Architectures and Deployment/02-deploying-models-in-the-cloud.ipynb"
           - "M3 - ML Architectures and Deployment/03-consuming-models-from-applications.ipynb"
+          - "M4 - Prompting and Language Models/01-the-power-of-prompting.ipynb"
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
           cache: pip
+      # CPU-only torch: the default PyPI wheel pulls several GB of GPU libraries the runner cannot use.
+      - run: pip install torch --index-url https://download.pytorch.org/whl/cpu
       - run: pip install -r requirements-dev.txt
       - run: scripts/run_notebooks.sh "${{ matrix.notebook }}"
+        env:
+          FONTYS_QUICK: "1"   # M4 only: fewer self-generation candidates and rounds on the slow CPU runner

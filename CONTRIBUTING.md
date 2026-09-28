@@ -15,7 +15,7 @@ Thank you for helping students learn. This repository is teaching material first
 
 ## Decks
 
-The four M2 decks in `presentations/` are **generated**. Never edit a `.pptx` by hand: change the builder in `presentations/src/`, rebuild with `make decks`, and commit both the builder and the deck. Every number on a slide comes from an executed notebook, a computation on the course dataset, or a source cited on the slide. Synthetic diagrams carry an "illustration" caption.
+The decks in `presentations/` (four for M2, one for M4) are **generated**. Never edit a `.pptx` by hand: change the builder in `presentations/src/`, rebuild with `make decks`, and commit both the builder and the deck. Every number on a slide comes from an executed notebook, a computation on the course dataset, or a source cited on the slide. Synthetic diagrams carry an "illustration" caption.
 
 ## Workflow
 
@@ -30,8 +30,8 @@ Commit messages: imperative mood, one line under 72 characters, optional body ex
 
 | Path | Purpose |
 |---|---|
-| `M1 - Descriptive analytics/`, `M2 - Machine Learning/`, `M3 - ML Architectures and Deployment/` | The nine notebooks, three per module |
-| `presentations/` | Generated M2 decks and their builders (`src/`) |
+| `M1 - Descriptive analytics/`, `M2 - Machine Learning/`, `M3 - ML Architectures and Deployment/`, `M4 - Prompting and Language Models/` | The ten notebooks |
+| `presentations/` | Generated M2 and M4 decks and their builders (`src/`) |
 | `docs/` | The course site published with GitHub Pages |
 | `scripts/` | Maintainer checks used by `make` and CI |
 | `.github/` | CI workflows, issue and pull request templates, CODEOWNERS, Dependabot |

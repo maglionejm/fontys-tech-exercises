@@ -5,6 +5,8 @@ All notable changes to this repository. Dates are in ISO format. The project doe
 ## Unreleased
 
 ### Added
+- Module 4, *Prompting and Language Models*: notebook `01-the-power-of-prompting` runs a small open language model locally (no key), scores a five-rung prompt ladder on real passengers with a dev/test split, and teaches self-generation prompting (self-written examples, self-refine, APE, OPRO) plus an optional, off-by-default frontier-model author. A generated teaching deck accompanies it in `presentations/`.
+- `torch` and `transformers` in `requirements.txt` (only needed for M4); the notebook-execution workflow installs the CPU build of torch.
 - Course website on GitHub Pages (`docs/`): the story of the Titanic dataset, example outputs from every module, and a survival model that runs in the browser.
 - Enterprise scaffolding: CI (lint, notebook checks, secret scan on full history), weekly notebook execution, Pages deployment, issue and pull request templates, CODEOWNERS, Dependabot, `Makefile`, `requirements-dev.txt`, `.editorconfig`, `.gitattributes`.
 - `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, this changelog.

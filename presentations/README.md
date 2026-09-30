@@ -30,12 +30,15 @@ Four decks on the evolution from prompt engineering to harness engineering, each
 
 The decks are fully generated from code in `src/` (shared design system in `src/deck_style.py`, one builder per deck). To rebuild:
 
+Use the repository's single environment (created at the root by `make setup` from `requirements-dev.txt`, which includes python-pptx and matplotlib), then:
+
 ```bash
-python3 -m venv .venv && source .venv/bin/activate
-pip install python-pptx matplotlib numpy pandas
-cd src
-python build_session_1.py      # M2, and 2, 3, 4
-python build_m5_session_1.py   # M5, and 2, 3, 4
+make decks                     # rebuilds all eight decks
+# or one at a time, from presentations/src:
+../../.venv/bin/python build_session_1.py      # M2, and 2, 3, 4
+../../.venv/bin/python build_m5_session_1.py   # M5, and 2, 3, 4
 ```
+
+Do not create a second virtual environment inside `presentations/`; one `.venv` at the repository root serves the notebooks, the checks and the decks.
 
 Each builder regenerates its own charts and diagrams (to a temp folder) and writes the PPTX one level up. External references cited on slides (course syllabi, published papers) are attributed directly on the slides.

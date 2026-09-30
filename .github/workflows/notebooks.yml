@@ -6,6 +6,7 @@ on:
   pull_request:
     paths:
       - "**/*.ipynb"
+      - "M5 - Harness Engineering/harness/**"
       - "requirements*.txt"
       - "scripts/run_notebooks.sh"
       - ".github/workflows/notebooks.yml"

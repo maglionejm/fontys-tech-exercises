@@ -15,7 +15,7 @@ from .skills import Skill, SkillIndex, load_skills
 from .tools import Tool, ToolRegistry, tool
 from .trace import Event, Trace
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 __all__ = ["Agent", "Hooks", "RunResult", "allow_all", "deny_risk", "ContextWindow", "Notes",
            "Message", "ToolCall", "estimate_tokens", "total_tokens", "ModelView",
            "ScriptedModel", "call", "calls", "say", "Skill", "SkillIndex", "load_skills",

@@ -287,8 +287,12 @@ def close_slide(prs, title, lines, course="Machine Learning - Module 2"):
 
 
 # ---------------------------------------------------------------- finish
-def save_deck(prs, path, footer_text):
-    """Add footers/page numbers (skipping title slide), scrub metadata, save."""
+def save_deck(prs, path, footer_text, author="M2 Machine Learning course"):
+    """Add footers/page numbers (skipping title slide), scrub metadata, save.
+
+    author is the generic course name written into the file's properties in
+    place of any personal name (the decks carry no personal details).
+    """
     for idx, slide in enumerate(prs.slides, start=1):
         if idx == 1:
             continue
@@ -306,8 +310,8 @@ def save_deck(prs, path, footer_text):
         nb = _box(slide, Inches(12.35), Inches(7.08), Inches(0.6), Inches(0.32))
         _para(nb.text_frame, str(idx), 9, color, first=True, align=PP_ALIGN.RIGHT)
     cp = prs.core_properties
-    cp.author = "M2 Machine Learning course"
-    cp.last_modified_by = "M2 Machine Learning course"
+    cp.author = author
+    cp.last_modified_by = author
     cp.comments = ""
     cp.title = footer_text
     prs.save(path)

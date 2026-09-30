@@ -5,6 +5,7 @@ All notable changes to this repository. Dates are in ISO format. The project doe
 ## Unreleased
 
 ### Added
+- Module 5, Harness Engineering: four notebooks and four decks on the evolution from prompt engineering to harness engineering, built on a small teaching library (`M5 - Harness Engineering/harness/`) with a deterministic stand-in model, tools, skills with progressive disclosure, context compaction, hooks and permissions, the five workflow patterns, sub-agents, agent teams, handoffs and an eval runner. Runs without any API key; real models are optional.
 - Course website on GitHub Pages (`docs/`): the story of the Titanic dataset, example outputs from every module, and a survival model that runs in the browser.
 - Enterprise scaffolding: CI (lint, notebook checks, secret scan on full history), weekly notebook execution, Pages deployment, issue and pull request templates, CODEOWNERS, Dependabot, `Makefile`, `requirements-dev.txt`, `.editorconfig`, `.gitattributes`.
 - `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, this changelog.

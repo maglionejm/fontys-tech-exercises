@@ -74,9 +74,9 @@ def make_model_interface_fig():
                                      arrowstyle="-|>", mutation_scale=18,
                                      color=pal["navy"], lw=2))
     # the plugs
-    plugs = [("ScriptedModel", "deterministic stand-in,\nno API key"),
-             ("AnthropicModel", "claude-opus-5 via\nproviders.connect"),
-             ("OpenAIModel", "gpt-5 via\nproviders.connect")]
+    plugs = [("ScriptedModel", "deterministic stand-in;\nmodel_for without a key"),
+             ("AnthropicModel", "claude-opus-5 / sonnet-5;\nmodel_for with a key"),
+             ("OpenAIModel", "gpt-5 adapter in\nharness.providers")]
     pw = 2.55
     for i, (name, sub) in enumerate(plugs):
         x = 1.2 + i * 2.9
@@ -342,23 +342,26 @@ def slides():
             "In plain words: the model is the text-in, text-out engine",
             "It never runs a tool itself; it only asks for one, by name, "
             "with JSON arguments",
-            "The library's ScriptedModel fills the slot deterministically - "
+            "The stand-in ScriptedModel fills the slot deterministically: "
             "no key, same output every run",
-            "A real model plugs into the same slot: connect('anthropic') "
-            "asks for a key with getpass, never stores it",
+            "harness.runtime.model_for(role) returns Claude when a key is "
+            "present, the stand-in otherwise",
             "The harness does not change when the engine does - that is the "
             "point of the interface",
         ],
-        caption="Illustration. Interface from the harness library "
-                "(harness.models.Model); adapters AnthropicModel and "
-                "OpenAIModel in harness.providers.",
+        caption="Illustration. harness.models.Model; model_for in "
+                "harness.runtime. The key lives in .env, never in a cell, "
+                "never committed.",
     )
     notes(s, "Start with the contract, not the vendor. A model takes the "
              "system prompt, the messages so far and the tool schemas, and "
              "returns one message: text, or a request to call a tool. That is "
              "all a harness needs to know. Our ScriptedModel implements the "
              "same contract with a hand-written policy, so the notebooks run "
-             "without a key and give the same answer every time. Class "
+             "without a key and give the same answer every time. With an "
+             "ANTHROPIC_API_KEY in the git-ignored .env, model_for swaps in "
+             "claude-opus-5 for the lead and research roles and claude-sonnet-5 "
+             "for workers and judges; the same cells then run live. Class "
              "question: which of the three inputs would you expect to grow "
              "the most during a long task?")
 
@@ -644,14 +647,17 @@ def slides():
             "ContextWindow(budget_tokens=2500) in the library; the default "
             "budget is 6,000",
         ],
-        caption="Counts from notebook 02 (deterministic ScriptedModel). "
-                "Technique: Anthropic, Effective context engineering for AI "
-                "agents, 29 Sep 2025.",
+        caption="Reference run on the deterministic stand-in; the live run on "
+                "Claude varies and reports real tokens. Anthropic, Effective "
+                "context engineering for AI agents, 29 Sep 2025.",
     )
     notes(s, "Run this cell live: the notebook prints the message count after "
              "each question and the compaction note itself. Point at the "
              "note: it names which tools ran and what came back, so the model "
-             "can still answer follow-ups. Class question: what would you lose "
+             "can still answer follow-ups. These counts are the reference run "
+             "on the stand-in; on live Claude the budget check fires at a "
+             "different point because real answers have different lengths. "
+             "Class question: what would you lose "
              "if the compaction summary were just 'earlier conversation "
              "omitted'?")
 
@@ -716,11 +722,13 @@ def slides():
         ]),
         kicker="Notebook 02 - tools",
         note="Rules: Anthropic, Writing effective tools for agents, Sep 2025. "
-             "The good tool is the library's search_docs; the vague one is "
-             "notebook 02's counter-example.",
+             "Traces: reference run on the deterministic stand-in; the live "
+             "run on Claude varies and reports real tokens.",
     )
-    notes(s, "Notebook 02 runs both against the ScriptedModel and prints the "
-             "two traces side by side. The vague tool wastes the budget on "
+    notes(s, "Notebook 02 runs both and prints the two traces side by side: "
+             "the reference run on the stand-in gives the exact numbers, the "
+             "live Claude run shows the same contrast with real tokens. The "
+             "vague tool wastes the budget on "
              "whole documents and gives the model nothing to decide with. "
              "Class question: which of the four differences would you fix "
              "first if you could only fix one?")
@@ -752,16 +760,19 @@ def slides():
             "Session 3 builds hooks, risk levels and approval gates in full",
         ]),
         kicker="Notebook 02 - permissions",
-        note="Message text from the harness library (harness.agent), printed "
-             "by notebook 02. Risk levels: read, write, danger "
-             "(harness.tools.RISK_LEVELS).",
+        note="Message text from harness.agent, printed by notebook 02 in the "
+             "reference run on the stand-in; identical on live Claude, because "
+             "the check runs outside the model. Risk levels: read, write, "
+             "danger.",
     )
     notes(s, "Read the message aloud: it names the tool, the risk level and "
              "the decision, and it goes back to the model so the loop can "
              "continue. Then flip permission to allow_all and show the same "
              "call running. The approval paradox is the reason defaults "
              "matter: when a human is asked, they say yes 93% of the time. "
-             "Class question: which tools in your own projects deserve the "
+             "The denial is the one output that does not change between the "
+             "stand-in and live Claude: it never reaches the model. Class "
+             "question: which tools in your own projects deserve the "
              "'danger' label?")
 
     # 17. The skills catalog
@@ -783,51 +794,58 @@ def slides():
              "template.md"],
         ],
         kicker="Notebook 02 - skills",
-        note="Catalog (level 1) = 98 tokens; all three bodies (level 2) = "
-             "321 tokens, 3.3x; a run that loads a skill costs ~1,800 tokens "
-             "more than a plain run. Notebook 02; Anthropic, Agent Skills, "
-             "16 Oct 2025.",
+        note="Catalog 98 tokens; three bodies 321 tokens (3.3x); a skill run "
+             "costs ~1,800 tokens more. Reference run on the deterministic "
+             "stand-in; the live run on Claude varies and reports real tokens. "
+             "Anthropic, Agent Skills, 16 Oct 2025.",
         col_widths=[1.3, 4.2, 1.9],
     )
     _mono_columns(s, [0], size=11)
     notes(s, "This is exactly what the agent sees at startup: three lines, 98 "
              "tokens. When a question asks for a fact, the cite-sources "
              "description matches and the body loads - the five numbered "
-             "steps of search, read, draft, check, reply. Class question: "
-             "which of the three descriptions would you rewrite, and why?")
+             "steps of search, read, draft, check, reply. The catalog and "
+             "body sizes are fixed; only the run-level token cost changes on "
+             "live Claude. Class question: which of the three descriptions "
+             "would you rewrite, and why?")
 
-    # 18. Swapping the engine
+    # 18. Two engines, one harness
     s = ds.two_col_slide(
         prs,
-        "The last section swaps the engine: same harness, a real model, "
-        "no key stored",
-        ("ScriptedModel - the stand-in", [
-            "A hand-written policy decides the next message from what it "
-            "sees",
-            "Deterministic: same input, same output, every run, in CI and "
-            "in Colab",
-            "Shows the mechanics of the loop without an account or a key",
+        "Two engines, one harness: Claude when a key is present, the "
+        "stand-in otherwise",
+        ("The stand-in - ScriptedModel", [
+            "Used automatically when no ANTHROPIC_API_KEY is found: CI, "
+            "key-less Colab",
+            "Deterministic: the reference runs whose numbers appear on these "
+            "slides",
+            "A hand-written policy decides the next message from what it sees",
             "Its limits are the point: it knows only what the policy encodes",
         ]),
-        ("A real model - optional", [
-            "RUN_REAL = False by default; set True to try it",
-            "connect('anthropic') or connect('openai') asks for the key with "
-            "getpass",
-            "The key lives in memory for the session and is never written "
-            "anywhere",
-            "Everything else in the notebook stays the same: tools, budget, "
-            "permissions, skills",
+        ("Real Claude - the default with a key", [
+            "model_for('research') returns claude-opus-5; workers and judges "
+            "get claude-sonnet-5",
+            "The key lives in a git-ignored .env at the repository root "
+            "(copy .env.example)",
+            "Key in .env, never in a cell, never committed - CI scans every "
+            "commit for secrets",
+            "Live runs vary and print real token usage; tools, budget, "
+            "permissions and skills stay the same",
         ]),
-        kicker="Notebook 02 - the optional real model",
-        note="Repository rule: no secrets ever, in code, outputs or metadata. "
-             "Default models: claude-opus-5 and gpt-5 (harness.providers).",
+        kicker="Notebook 02 - the engine switch",
+        note="harness.runtime.model_for(role): claude-opus-5 for lead and "
+             "research roles, claude-sonnet-5 for workers and judges; "
+             "override with HARNESS_MODEL and HARNESS_WORKER_MODEL.",
     )
-    notes(s, "End of the notebook, and the payoff of the interface slide: the "
-             "harness does not change when the engine does. If a student has "
-             "a key, they paste it into a hidden prompt and run the same "
-             "cells. Repeat the repository rule: no key is ever stored or "
-             "committed. Class question: what would you compare between the "
-             "scripted and the real run to judge the harness, not the model?")
+    notes(s, "The payoff of the interface slide: the harness does not change "
+             "when the engine does. Every notebook calls model_for(role); with "
+             "a key in .env it returns real Claude and the same cells run "
+             "live, printing real token usage; without one it returns the "
+             "stand-in, which is where every exact number in this deck comes "
+             "from. Repeat the repository rule: the key lives in .env, never "
+             "in a cell, never in git. Class question: what would you compare "
+             "between the stand-in run and the live run to judge the harness, "
+             "not the model?")
 
     # 19. Close
     s = ds.close_slide(

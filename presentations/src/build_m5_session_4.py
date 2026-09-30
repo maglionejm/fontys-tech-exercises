@@ -24,6 +24,9 @@ os.makedirs(FIGS, exist_ok=True)
 pal = ds.mpl_theme()
 COURSE = "Harness Engineering - Module 5"
 FOOTER = "M5 Session 4 - Sub-agents, Teams and the Discipline"
+REF = ("The figures on this slide are the notebook's reference run on the "
+       "deterministic stand-in; the notebook then repeats the comparison live "
+       "on Claude, which varies and prints real token usage.")
 
 
 def notes(slide, text):
@@ -569,9 +572,7 @@ def slides():
             "subtasks, same final text",
         ]),
         kicker="Orchestration",
-        note="Both live in the course library: harness.patterns.orchestrate "
-             "and harness.multi.SubAgentPool.delegate_tool(). Workflows vs "
-             "agents: Anthropic, Building effective agents, Dec 2024.",
+        note="Both live in the course library: harness.patterns.orchestrate and harness.multi.SubAgentPool.delegate_tool(); token figures from the notebook 04 reference run on the stand-in. Anthropic, Building effective agents, Dec 2024.",
     )
     notes(s, "This is Session 3's workflow-versus-agent choice, one level "
              "up. On the left, orchestration is a Python function: the plan "
@@ -606,12 +607,10 @@ def slides():
             ["Unbounded delegation",
              "The lead keeps spawning sub-agents until the budget is gone",
              "A before_tool hook caps delegations: at 2, the third is denied; "
-             "~4,223 vs ~6,333 tokens (notebook 04)"],
+             "~4,300 vs ~6,333 tokens (notebook 04)"],
         ],
         kicker="Failure modes",
-        note="Handoffs and reviewer findings: Marmelab, The State of AI "
-             "Harness Engineering 2026, Sep 2026. 15x tokens: Anthropic, "
-             "Jun 2025. Delegation cap: notebook 04, 2 started, 1 denied.",
+        note="Handoffs and reviewer findings: Marmelab, The State of AI Harness Engineering 2026, Sep 2026. 15x tokens: Anthropic, Jun 2025. Delegation cap: notebook 04 reference run on the stand-in, 2 started, 1 denied.",
         col_widths=[2.2, 4.6, 4.2],
     )
     notes(s, "Every row is a real incident type; the last one is the notebook's "
@@ -745,9 +744,7 @@ def slides():
             "Total work went up roughly eightfold; the lead's window shrank. "
             "That is the trade",
         ],
-        caption="Notebook 04: lead with a delegate tool vs a solo research "
-                "agent on the three-part question; tokens estimated by the "
-                "course library (harness.multi.context_size).",
+        caption="Notebook 04 reference run on the deterministic stand-in (live Claude varies, real tokens): lead with delegate tool vs solo agent; tokens via harness.multi.context_size.",
     )
     notes(s, "The chart has two kinds of bar on purpose. The navy bars are "
              "context sizes - what one agent was carrying at the end. The "
@@ -778,9 +775,7 @@ def slides():
             "work, same cost",
             "In plain words: a team of drivers sharing one job board",
         ],
-        caption="Notebook 04: harness.multi.Team with TaskBoard and Mailbox; "
-                "the six tasks come from the eval suite. Claude Code agent "
-                "teams: research preview, Feb 2026.",
+        caption="Notebook 04 reference run on the stand-in (live Claude varies, real tokens): harness.multi.Team with TaskBoard and Mailbox, six tasks. Agent teams: Claude Code, Feb 2026.",
     )
     notes(s, "Walk the board top to bottom: tasks one to six, owners t0, t1, "
              "t2 in rotation because each teammate claims the next open task "
@@ -812,9 +807,7 @@ def slides():
             "In plain words: change drivers, keep the passengers - useful, "
             "not free",
         ],
-        caption="Notebook 04: harness.multi.handoff. (891 - 179) / 891 = "
-                "0.799102, the M2 train share. Handoffs: OpenAI, A practical "
-                "guide to building agents, Apr 2025.",
+        caption="Notebook 04 reference run on the stand-in (live Claude varies): harness.multi.handoff; (891 - 179) / 891 = 0.799102, the M2 train share. Handoffs: OpenAI, Apr 2025.",
     )
     notes(s, "The handoff is the simplest of the three shapes and the "
              "easiest to overuse. The calculator agent gets the entire "
@@ -843,9 +836,7 @@ def slides():
             "The fixed 'careful' policy searches once and finishes for ~422 "
             "tokens",
         ],
-        caption="Notebook 04: a looping policy that always calls search_docs, "
-                "max_turns=6; context tokens per turn read from the trace. "
-                "The careful policy: one search, done, ~422 tokens.",
+        caption="Notebook 04: a looping policy that always calls search_docs, max_turns=6; tokens per turn from the trace. Kept on the stand-in on purpose: a real model would simply stop.",
     )
     notes(s, "This is Session 3's third exit made visible. The policy is "
              "deliberately broken: it calls the same search on every turn. "
@@ -916,8 +907,9 @@ def slides():
             "budgets",
             "The discipline: instruction files, executable guards, evals in "
             "CI, observability",
-            "Swap the ScriptedModel for a real one with providers.connect: "
-            "same harness",
+            "Two engines, one harness: model_for(role) gives Claude when a key "
+            "is present (.env, never in a cell, never committed), the "
+            "stand-in otherwise",
         ],
         course=COURSE,
     )
@@ -929,6 +921,17 @@ def slides():
              "is the first agent you would build with this, and which of the "
              "eight pieces would you spend most of your time on?")
 
+    extra = {8: REF, 9: REF, 14: REF, 15: REF, 16: REF,
+             17: "This demo is kept on the stand-in on purpose: a real model "
+                 "would simply stop calling the tool, so the runaway would "
+                 "never show.",
+             19: "model_for(role) picks the engine: Claude when "
+                 "ANTHROPIC_API_KEY is present in the git-ignored .env, the "
+                 "deterministic stand-in otherwise - the harness code is "
+                 "identical either way."}
+    for idx, text in extra.items():
+        tf = prs.slides[idx - 1].notes_slide.notes_text_frame
+        tf.text = tf.text + " " + text
     return prs
 
 

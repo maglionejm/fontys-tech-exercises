@@ -20,6 +20,9 @@ os.makedirs(FIGS, exist_ok=True)
 pal = ds.mpl_theme()
 COURSE = "Harness Engineering - Module 5"
 FOOTER = "M5 Session 3 - Building a Harness"
+REF = ("The figures on this slide are the notebook's reference run on the "
+       "deterministic stand-in; the notebook then repeats the comparison live "
+       "on Claude, which varies and prints real token usage.")
 
 
 def notes(slide, text):
@@ -775,9 +778,7 @@ def slides():
             "A bare model with the same validator: 2 calls, ~73 tokens, still "
             "wrong - a guard cannot add ability",
         ],
-        caption="Notebook 03: Hooks.validate_answer on a lazy research policy; "
-                "trace condensed, research turns 2-4 folded into one row. "
-                "5 model calls, 3 tool calls, ~2,163 tokens.",
+        caption="Notebook 03 reference run on the deterministic stand-in (the live Claude run varies and reports real tokens); trace condensed, turns 2-4 folded into one row.",
     )
     notes(s, "This is the smallest possible guardrail: a Python function "
              "that returns a problem string when the answer has no "
@@ -809,9 +810,7 @@ def slides():
             "In plain words: a signpost at the junction - each road has its "
             "own driver",
         ],
-        caption="patterns.route() in the course library, notebook 03; labels: "
-                "calculation, research, general. Pattern: Anthropic, Building "
-                "effective agents, Dec 2024.",
+        caption="patterns.route() in notebook 03, reference run on the stand-in; live Claude varies. Labels: calculation, research, general. Anthropic, Building effective agents, Dec 2024.",
     )
     notes(s, "Two very different questions, one entry point. The router is "
              "an agent whose only job is to emit a label; the specialists "
@@ -838,9 +837,10 @@ def slides():
             "trap",
             "Only the harness changed; the model and the questions are "
             "identical",
+            "The notebook then reruns the same 12 cases on Claude: an eval is "
+            "run, not assumed",
         ],
-        caption="Eval suite of 12 cases in notebook 03 (harness.evals.compare). "
-                "Graders: contains(...) plus cites(...) per case.",
+        caption="12-case eval suite, notebook 03 (harness.evals.compare); graders contains + cites. Reference run on the deterministic stand-in; the live Claude run varies, real tokens.",
     )
     notes(s, "This is the payoff of the whole session in one chart. The bare "
              "model fails everything because our ScriptedModel, like a real "
@@ -866,9 +866,7 @@ def slides():
             "From B to C: one more correct case for 12,814 more tokens, 2.1x",
             "Worth it? Depends on what one wrong answer costs you",
         ],
-        caption="Estimated tokens from the traces, notebook 03 (prints 172 / "
-                "11,766 / 24,580). 24,600 / 11,800 = 2.1. Prices vary by "
-                "model; the ratio is the lesson.",
+        caption="Notebook 03 reference run on the stand-in (prints 172 / 11,766 / 24,580; 24,600 / 11,800 = 2.1). The live Claude run varies and reports real tokens; the ratio is the lesson.",
     )
     notes(s, "Now the other axis. Tokens rise by a factor of about seventy "
              "from A to B and double again from B to C. The engineering "
@@ -899,9 +897,7 @@ def slides():
             "In plain words: the harness made not-knowing the cheapest path",
         ]),
         kicker="Notebook 03 - the no-answer trap",
-        note="Notebook 03, eval case 'no-answer'; grader contains('could not "
-             "verify'). Lesson: write the trap into the suite, or you will "
-             "never see it.",
+        note="Notebook 03, eval case 'no-answer'; grader contains('could not verify'); reference run on the stand-in, the live Claude run varies. Lesson: write the trap into the suite, or you will never see it.",
     )
     notes(s, "The most important case in the suite is the one with no "
              "answer. B's failure is not a bug in search - search did what "
@@ -927,9 +923,7 @@ def slides():
             ["C compared with B", "+1 case (+8.3 points)", "2.1x", "2.1x", "+$38.40"],
         ],
         kicker="Notebook 03 - cost accounting",
-        note="Cost = tokens / 1,000,000 x 3, as in trace.cost(3.0) in the "
-             "course library. The $3 price is a stand-in; real prices differ "
-             "by model and between input and output tokens.",
+        note="Cost = tokens / 1,000,000 x 3, as in trace.cost(3.0). Dollar figures use estimated tokens at a stand-in price; the notebook's live Claude runs show real usage, and real prices differ by model and by input vs output.",
         col_widths=[3.6, 1.2, 1.4, 2.8, 2.0],
     )
     notes(s, "Do the arithmetic on the slide: 24,600 tokens at three dollars "
@@ -969,6 +963,10 @@ def slides():
              "class: which single piece from today would you add first to "
              "an agent you already use?")
 
+    extra = {14: REF, 15: REF, 16: REF, 17: REF, 18: REF, 19: REF}
+    for idx, text in extra.items():
+        tf = prs.slides[idx - 1].notes_slide.notes_text_frame
+        tf.text = tf.text + " " + text
     return prs
 
 

@@ -651,8 +651,8 @@ def slides():
         ["Term", "In plain words", "Where you will meet it today"],
         [
             ["Model", "The text-in, text-out engine; anything that maps a "
-             "context to the next message", "ScriptedModel in notebook 01 - "
-             "no API key needed"],
+             "context to the next message", "model_for('research'): Claude "
+             "with a key in .env, the stand-in without"],
             ["Prompt", "The words you send", "The bare and the improved "
              "prompt"],
             ["Context", "Everything the model sees in one call",
@@ -709,11 +709,17 @@ def slides():
              "MCP in its Agents SDK ... [source: model-context-protocol]'",
              "Both parts correct, cited. 4 model calls, 3 tool calls, "
              "~1,980 tokens"],
+            ["Live demo (claude-opus-5)",
+             "A 2026 question no model knows from training: what share of "
+             "security rules in instruction files is backed by a real control?",
+             "'4.4% ...' with a [source: id] citation - wording varies run "
+             "to run",
+             "Real Claude, real tokens; the harness supplies the fact"],
         ],
         kicker="Notebook 01, sections 1-3",
-        note="The question: 'When did Anthropic open-source the Model Context "
-             "Protocol, and which company adopted it in March 2025?' Same "
-             "ScriptedModel in all three runs.",
+        note="Rows 1-3: reference run on the deterministic stand-in; the live "
+             "run on Claude varies and reports real tokens. Row 4: the "
+             "notebook's live demo (Marmelab, Sep 2026 figure).",
         col_widths=[1.1, 1.9, 3.0, 2.2],
     )
     notes(s, "Run the three cells live if you can. The same model answers "
@@ -721,9 +727,12 @@ def slides():
              "it. Better words do not add facts the model does not have - the "
              "prompt-engineered version is more polite and equally wrong. The "
              "harness adds a library, a way to search it, and a check before "
-             "answering. Class question: what would you have to add to the "
-             "prompt to make the bare model right, and would that scale to "
-             "the next question?")
+             "answering. The first three rows are the reference run on the "
+             "stand-in, so the numbers are exact; the fourth row is the live "
+             "demo on claude-opus-5 with a 2026 fact no model can know from "
+             "training, and its wording changes every run. Class question: "
+             "what would you have to add to the prompt to make the bare model "
+             "right, and would that scale to the next question?")
 
     # 15. The three tools
     s = ds.table_slide(
@@ -778,16 +787,18 @@ def slides():
             "tool calls, tokens, time",
             "result.trace.show() prints exactly this list",
         ],
-        caption="Steps and counts from notebook 01 (4 model calls, 3 tool "
-                "calls, ~1,980 estimated tokens). The estimate counts "
-                "characters; a real API reports exact tokens.",
+        caption="Reference run on the deterministic stand-in (4 model calls, "
+                "3 tool calls, ~1,980 estimated tokens); the live run on "
+                "Claude varies and reports real tokens.",
     )
     notes(s, "This picture is what every harness produces if you ask it to. "
              "Read it as a story: the model did not know the date, so it "
              "searched; it found a document, so it read it; it drafted an "
              "answer and had it checked; the check passed, so it answered. The "
-             "trace is also where debugging happens in Session 3. Class "
-             "question: where in this trace would a wrong answer have been "
+             "trace is also where debugging happens in Session 3. On live "
+             "Claude the trace has the same shape but the number of calls and "
+             "the tokens differ from run to run. Class question: where in "
+             "this trace would a wrong answer have been "
              "caught?")
 
     # 17. Tokens per approach
@@ -809,16 +820,18 @@ def slides():
             "Session 2 shows how to keep that bill down: token-efficient "
             "tools and compaction",
         ],
-        caption="Estimated tokens from notebook 01 (character-based estimate, "
-                "deterministic ScriptedModel). Anthropic's research system ran "
-                "at ~15x a chat's tokens (Jun 2025).",
+        caption="Reference run on the deterministic stand-in; the live run on "
+                "Claude varies and reports real tokens. Anthropic's research "
+                "system ran at ~15x a chat's tokens (Jun 2025).",
     )
     notes(s, "Nothing is free. Every tool result is pasted into the context "
              "and the model reads it again on the next call. That is why "
              "Session 2 spends time on token-efficient tools and on "
              "compaction. Anthropic reported that its multi-agent research "
              "system used about 15 times the tokens of a chat, and accepted "
-             "the bill because the task was worth it. Class question: for "
+             "the bill because the task was worth it. The live Claude run "
+             "prints real usage from the API instead of the estimate. Class "
+             "question: for "
              "which questions would you refuse to pay 76x?")
 
     # 18. The smallest harness
@@ -845,9 +858,9 @@ def slides():
              "Paste the result back so the next call sees it"],
         ],
         kicker="Notebook 01, section 3",
-        note="How to read it: left, the loop notebook 01 writes inline; "
-             "right, what each line does. Anthropic, Claude Agent SDK, Sep "
-             "2025: gather context, act, verify, repeat.",
+        note="How to read it: left, the loop notebook 01 writes inline (same "
+             "loop for the stand-in and for Claude); right, what each line "
+             "does. Anthropic, Claude Agent SDK, Sep 2025.",
         col_widths=[3.0, 2.6],
     )
     _mono_first_column(s, size=11.5)
@@ -866,8 +879,9 @@ def slides():
         "points of harness-only variation on SWE-bench Pro for Claude Opus "
         "4.5: 45.9% under SEAL, 55.4% under Claude Code",
         foot="arXiv 2605.23950, May 2026; arXiv 2609.11987, Sep 2026. Our "
-             "notebook shows the same effect at toy scale: one ScriptedModel, "
-             "a wrong answer without a harness and a cited one with it.",
+             "notebook shows the same effect at toy scale: the stand-in "
+             "reference run is wrong without a harness and cited with it; "
+             "the live Claude run varies and reports real tokens.",
         kicker="Takeaway",
     )
     notes(s, "Close the loop with the evidence slide. At benchmark scale the "
@@ -894,12 +908,17 @@ def slides():
             "the last result",
             "Notebook 01: the same question three ways; only the harness "
             "answers right, with a source, at ~76x the tokens",
-            "Practice now, zero setup: notebook 01 in Colab, Runtime > Run "
-            "all, then the exercises before the solutions",
+            "Two engines, one harness: model_for(role) returns Claude when a "
+            "key is present, the stand-in otherwise - notebook 01 runs either "
+            "way",
         ],
         course=course,
     )
-    notes(s, "Recap the seven lines, then point at the exercises at the end "
+    notes(s, "Recap the seven lines. The last one is the course mechanics: "
+             "with an ANTHROPIC_API_KEY in a git-ignored .env the notebooks run "
+             "on real Claude; without one they run on the deterministic "
+             "stand-in, which is where every number on these slides comes "
+             "from. Then point at the exercises at the end "
              "of notebook 01: they extend the 15-line loop. Next session opens "
              "the four pieces the model sees: models, context, tools and "
              "skills. Class question to close: which of the eight pieces did "

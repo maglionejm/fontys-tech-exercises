@@ -84,7 +84,7 @@ The first cell of every notebook installs anything missing (on Colab almost ever
 
 ### Option B - Locally
 
-Requirements: Python 3.10 or newer and an internet connection (datasets are downloaded from public URLs on first run).
+Requirements: Python 3.10 or newer (the repository's own environment uses 3.14) and an internet connection (datasets are downloaded from public URLs on first run).
 
 ```bash
 git clone https://github.com/maglionejm/fontys-tech-exercises.git
@@ -99,7 +99,7 @@ jupyter lab
 
 Open any notebook and run it top to bottom. Each notebook is independent.
 
-Maintainers: `make setup` also installs the tooling in `requirements-dev.txt`; `make help` lists every task.
+Maintainers: `make setup` creates the one `.venv` at the repository root with the runtime packages and the tooling from `requirements-dev.txt`; `make help` lists every task. Point your editor's notebook kernel at `.venv/bin/python`.
 
 ## Datasets
 

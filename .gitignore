@@ -1,5 +1,6 @@
-# Virtual environments
+# Virtual environments (one .venv at the repository root; never commit any)
 .venv/
+.venv*/
 venv/
 env/
 

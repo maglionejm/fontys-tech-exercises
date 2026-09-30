@@ -39,7 +39,7 @@ Commit messages: imperative mood, one line under 72 characters, optional body ex
 ## Local setup for maintainers
 
 ```bash
-make setup          # .venv with runtime + tooling (requirements-dev.txt)
+make setup          # the single .venv at the repo root: runtime + tooling (requirements-dev.txt), Python 3.10+, 3.14 recommended
 make check          # fast: ruff + notebook static checks
 make test-notebooks # slow: execute every notebook into a temp folder
 make decks          # rebuild the PowerPoint decks

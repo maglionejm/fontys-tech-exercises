@@ -2,7 +2,7 @@
 # Students do not need this file: the notebooks run in Colab or plain Jupyter.
 #
 #   make setup           create .venv with runtime + maintainer tooling
-#   make check           fast checks: notebook format/outputs/secrets + lint
+#   make check           fast checks: notebook format/outputs/secrets + lint + harness unit tests
 #   make test-notebooks  execute every notebook top to bottom (slow, ~10 min)
 #   make decks           regenerate the four M2 PowerPoint decks
 #   make site            preview the GitHub Pages site on http://localhost:8000
@@ -12,7 +12,7 @@ PY      ?= python3
 VENV    ?= .venv
 BIN      = $(VENV)/bin
 
-.PHONY: help setup check lint check-notebooks test-notebooks decks site clean
+.PHONY: help setup check lint check-notebooks test-harness test-notebooks decks site clean
 
 help:
 	@grep -E '^#   make' Makefile | sed 's/^#   //'
@@ -25,13 +25,16 @@ $(BIN)/activate: requirements.txt requirements-dev.txt
 	$(BIN)/pip install -r requirements-dev.txt
 	@touch $(BIN)/activate
 
-check: lint check-notebooks
+check: lint check-notebooks test-harness
 
 lint: setup
-	$(BIN)/ruff check presentations/src scripts "M5 - Harness Engineering/harness"
+	$(BIN)/ruff check presentations/src scripts "M5 - Harness Engineering/harness" "M5 - Harness Engineering/tests"
 
 check-notebooks: setup
 	$(BIN)/python scripts/check_notebooks.py
+
+test-harness: setup
+	cd "M5 - Harness Engineering" && ../$(BIN)/python -m pytest tests -q
 
 test-notebooks: setup
 	PATH="$(abspath $(BIN)):$$PATH" scripts/run_notebooks.sh
@@ -47,4 +50,5 @@ clean:
 	find . -name outputs -type d -prune -exec rm -rf {} +
 	find . -name __pycache__ -type d -prune -exec rm -rf {} +
 	find . -name .ipynb_checkpoints -type d -prune -exec rm -rf {} +
+	find . -name .pytest_cache -type d -prune -exec rm -rf {} +
 	rm -rf docs/.cache

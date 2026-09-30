@@ -12,11 +12,13 @@ from .context import ContextWindow, Notes
 from .messages import Message, ToolCall, estimate_tokens, total_tokens
 from .models import ModelView, ScriptedModel, call, calls, say
 from .skills import Skill, SkillIndex, load_skills
+from .runtime import describe_runtime, load_env, model_for, real_model_available
 from .tools import Tool, ToolRegistry, tool
 from .trace import Event, Trace
 
-__version__ = "0.1.1"
+__version__ = "0.2.0"
 __all__ = ["Agent", "Hooks", "RunResult", "allow_all", "deny_risk", "ContextWindow", "Notes",
            "Message", "ToolCall", "estimate_tokens", "total_tokens", "ModelView",
            "ScriptedModel", "call", "calls", "say", "Skill", "SkillIndex", "load_skills",
-           "Tool", "ToolRegistry", "tool", "Event", "Trace"]
+           "Tool", "ToolRegistry", "tool", "Event", "Trace",
+           "describe_runtime", "load_env", "model_for", "real_model_available"]

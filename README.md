@@ -24,7 +24,7 @@ Everything runs **in Google Colab with one click** or **locally**. No accounts, 
 
 Every module works the same passenger list: 891 passengers of the Titanic, twelve columns, 342 survivors. Module 1 cleans and describes it. Module 2 trains a model that predicts who survives and judges it honestly on rows it never saw (test accuracy 0.838). Module 3 puts that model behind an API, into a container, into the cloud, and into an application that calls it. Three real passengers, Owen, Florence and Frankie, return in every session so the numbers always have faces.
 
-Module 5 leaves the ship. It teaches **harness engineering**: everything around a language model that turns it into a reliable agent. Its four notebooks build and run a small agent harness (a loop, tools, skills, context management, guardrails, sub-agents, teams and evals) with a deterministic stand-in model, so they run without any API key, and let you plug in a real model at the end.
+Module 5 leaves the ship. It teaches **harness engineering**: everything around a language model that turns it into a reliable agent. Its four notebooks build and run a small agent harness (a loop, tools, skills, context management, guardrails, sub-agents, teams and evals) on **real Claude models** when an `ANTHROPIC_API_KEY` is present in a git-ignored `.env` file, and on a deterministic stand-in model otherwise, so the same notebooks also run key-free in Colab and in CI.
 
 ## Course structure
 
@@ -135,7 +135,7 @@ When you run the notebooks, they create an `outputs/` folder next to themselves 
 
 - **Every notebook is executed** in a clean environment by the *Execute notebooks* workflow: on pull requests that touch notebooks, weekly, and on demand.
 - **Every commit is scanned** for secrets across the full history, and a static check rejects notebooks whose code, outputs or metadata contain key patterns or local paths.
-- **No secrets by design.** Nothing here needs an API key, a `.env` file or a login. Module 5 runs its agents on a deterministic stand-in model; connecting a real model is optional and asks for a key at run time without storing it. The optional *publish to the internet* guides (Hugging Face Spaces in M2, Google Cloud and AWS in M3) use the providers' web consoles and never embed tokens. See [SECURITY.md](SECURITY.md).
+- **No secrets in the repository.** Modules 1 to 3 need no key at all. Module 5 reads `ANTHROPIC_API_KEY` from a git-ignored `.env` file (see `.env.example`) to run on real Claude models, and falls back to a deterministic stand-in without it; the checks reject any notebook containing something that looks like a key. The optional *publish to the internet* guides (Hugging Face Spaces in M2, Google Cloud and AWS in M3) use the providers' web consoles and never embed tokens. See [SECURITY.md](SECURITY.md).
 - **Notebooks ship with outputs**, so every chart and table is readable on GitHub without running anything. Interactive Plotly charts render when you run the notebook.
 
 ## Contributing

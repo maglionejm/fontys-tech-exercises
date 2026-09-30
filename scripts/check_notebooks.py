@@ -24,7 +24,9 @@ NOTEBOOKS = sorted(ROOT.glob("M*/**/*.ipynb"))
 
 SECRET_PATTERNS = {
     "AWS access key": re.compile(r"AKIA[0-9A-Z]{16}"),
-    "OpenAI/Anthropic key": re.compile(r"\bsk-(?:proj-|ant-api\d*-)?[A-Za-z0-9]{32,}"),
+    "OpenAI key": re.compile(r"\bsk-(?:proj-)?[A-Za-z0-9]{32,}"),
+    "Anthropic key": re.compile(r"\bsk-ant-[A-Za-z0-9_-]{20,}"),
+    "env assignment with a value": re.compile(r"ANTHROPIC_API_KEY\s*=\s*\S{8,}"),
     "Hugging Face token": re.compile(r"\bhf_[A-Za-z0-9]{20,}"),
     "GitHub token": re.compile(r"\b(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}"),
     "Google API key": re.compile(r"AIza[0-9A-Za-z_-]{35}"),

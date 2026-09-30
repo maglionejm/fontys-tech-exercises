@@ -13,7 +13,15 @@ The module does not use the Titanic dataset. Its agents research the module's ow
 | 03 | Building a harness | the loop and its exits, hooks, the five workflow patterns, evals across three harness configurations, traces and cost |
 | 04 | Sub-agents, teams and the discipline | isolated sub-agents, orchestrator-workers, agent teams, handoffs, failure modes, the working discipline |
 
-Every notebook runs in Google Colab or local Jupyter with **no API key**. The last section of each notebook optionally connects a real model (Anthropic or OpenAI) through `harness.providers.connect`, which asks for a key at run time and never stores it.
+## Real Claude models, safely
+
+The notebooks run on **real Claude models by default** when a key is available, and on the deterministic `ScriptedModel` stand-in when it is not (continuous integration, or Colab without a key). One line decides, in every notebook: `model, system = model_for("research")`.
+
+1. Copy `.env.example` (repository root) to `.env` and put your key in `ANTHROPIC_API_KEY=...`. `.env` is git-ignored; never commit it, never paste a key into a notebook cell.
+2. Run any notebook. The first cells print which engine is active. Lead agents use `claude-opus-5`, workers, judges and routers use `claude-sonnet-5`; override with `HARNESS_MODEL` and `HARNESS_WORKER_MODEL` in `.env`.
+3. Real runs cost money and vary between runs. Each notebook also keeps a clearly labelled reference run on the stand-in (`model_for(role, real=False)`) so the numbers quoted in the decks stay reproducible.
+
+The repository's checks reject any notebook whose cells or outputs contain something that looks like a key.
 
 ## The `harness/` library
 
@@ -23,7 +31,8 @@ Plain Python, standard library only, written to be read in one sitting. Each fil
 |---|---|---|
 | `messages.py` | the conversation | `Message`, `ToolCall`, token estimates |
 | `models.py` | the model | the `Model` interface, `ScriptedModel` (a deterministic stand-in), `ModelView` |
-| `providers.py` | real models | `AnthropicModel`, `OpenAIModel`, `connect()` (optional) |
+| `providers.py` | real models | `AnthropicModel` (thinking blocks replayed, real token usage), `OpenAIModel` |
+| `runtime.py` | the engine switch | `load_env()`, `model_for(role)`, role prompts, `describe_runtime()` |
 | `policies.py` | stand-in behaviours | bare, prompted, research, judge, router, planner, synthesizer, lead |
 | `tools.py` | tools | the `@tool` decorator (JSON schema from a signature), `ToolRegistry`, risk levels |
 | `demo_tools.py` | the module's tools | `search_docs`, `read_doc`, `check_citation`, `calculator`, notes, `run_python` (danger) |

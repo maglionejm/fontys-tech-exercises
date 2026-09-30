@@ -122,6 +122,8 @@ class Agent:
             reply = self.model.complete(system, messages, self.tools.schemas())
             messages.append(reply)
             trace.events[-1].detail = reply.as_text()
+            if reply.usage:                       # a real provider told us the exact input size
+                trace.events[-1].tokens = int(reply.usage.get("input_tokens", 0))
 
             if not reply.tool_calls:
                 problem = next((p for v in self.hooks.validate_answer

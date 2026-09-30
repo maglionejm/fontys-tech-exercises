@@ -31,6 +31,8 @@ class Message:
     tool_calls: list[ToolCall] = field(default_factory=list)
     tool_call_id: str | None = None
     name: str | None = None
+    raw: Any = None            # provider-native content blocks, replayed verbatim on later calls
+    usage: dict | None = None  # real token counts reported by a provider, when available
 
     def as_text(self) -> str:
         """Flat text view, used for token estimates and printing."""

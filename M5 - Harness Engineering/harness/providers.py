@@ -1,8 +1,8 @@
 """Real models behind the same interface as the ScriptedModel.
 
-Optional. Nothing in the course needs these; they exist to show that the
-harness does not change when the engine does. Keys are asked for at run time
-with getpass and kept only in memory; never paste a key into a notebook.
+The harness does not change when the engine does. Credentials are read from
+the environment (ANTHROPIC_API_KEY, loaded from a git-ignored .env file by
+harness.runtime); nothing here ever stores or prints a key.
 """
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ def _group_tool_results(messages: list[Message]) -> list[list[Message]]:
     """Consecutive tool results belong in one turn for both providers."""
     groups: list[list[Message]] = []
     for m in messages:
-        if m.role == "tool" and groups and groups[-1] and groups[-1][0].role == "tool":
+        if m.role == "tool" and groups and groups[-1][0].role == "tool":
             groups[-1].append(m)
         else:
             groups.append([m])
@@ -24,48 +24,82 @@ def _group_tool_results(messages: list[Message]) -> list[list[Message]]:
 
 
 class AnthropicModel:
-    """Claude through the official anthropic SDK (Messages API, manual tool loop)."""
+    """Claude through the official anthropic SDK (Messages API, manual tool loop).
+
+    Thinking stays on its adaptive default; the model's own content blocks are
+    replayed verbatim on later turns so thinking blocks are preserved. effort
+    trades depth for speed and cost: "low" for workers, "medium" or "high" for leads.
+    """
 
     def __init__(self, model: str = "claude-opus-5", api_key: str | None = None,
-                 max_tokens: int = 4096):
+                 max_tokens: int = 4096, effort: str = "medium"):
         import anthropic  # imported here so the course never requires the package
 
         self.client = anthropic.Anthropic(api_key=api_key) if api_key else anthropic.Anthropic()
         self.model = model
         self.name = model
         self.max_tokens = max_tokens
+        self.effort = effort
+        self.calls_made = 0
+        self.input_tokens = 0
+        self.output_tokens = 0
 
-    def complete(self, system: str, messages: list[Message],
-                 tools: list[dict[str, Any]]) -> Message:
-        api_messages: list[dict[str, Any]] = []
+    @staticmethod
+    def _assistant_content(m: Message) -> list[dict[str, Any]]:
+        if m.raw:
+            return m.raw
+        content: list[dict[str, Any]] = []
+        if m.content:
+            content.append({"type": "text", "text": m.content})
+        for c in m.tool_calls:
+            content.append({"type": "tool_use", "id": c.id, "name": c.name, "input": c.arguments})
+        return content or [{"type": "text", "text": "(no content)"}]
+
+    def _api_messages(self, messages: list[Message]) -> list[dict[str, Any]]:
+        api: list[dict[str, Any]] = []
         for group in _group_tool_results(messages):
             first = group[0]
             if first.role == "tool":
-                api_messages.append({"role": "user", "content": [
+                api.append({"role": "user", "content": [
                     {"type": "tool_result", "tool_use_id": m.tool_call_id, "content": m.content}
                     for m in group]})
             elif first.role == "assistant":
-                content: list[dict[str, Any]] = []
-                if first.content:
-                    content.append({"type": "text", "text": first.content})
-                for c in first.tool_calls:
-                    content.append({"type": "tool_use", "id": c.id, "name": c.name,
-                                    "input": c.arguments})
-                api_messages.append({"role": "assistant", "content": content})
+                api.append({"role": "assistant", "content": self._assistant_content(first)})
             else:
-                api_messages.append({"role": "user", "content": first.content})
-        kwargs: dict[str, Any] = {}
+                api.append({"role": "user", "content": first.content})
+        return api
+
+    def complete(self, system: str, messages: list[Message],
+                 tools: list[dict[str, Any]]) -> Message:
+        kwargs: dict[str, Any] = {"output_config": {"effort": self.effort}}
         if system:
             kwargs["system"] = system
         if tools:
             kwargs["tools"] = [{"name": t["name"], "description": t["description"],
                                 "input_schema": t["parameters"]} for t in tools]
         response = self.client.messages.create(model=self.model, max_tokens=self.max_tokens,
-                                               messages=api_messages, **kwargs)
+                                               messages=self._api_messages(messages), **kwargs)
+        self.calls_made += 1
+        usage = {"input_tokens": response.usage.input_tokens,
+                 "output_tokens": response.usage.output_tokens}
+        self.input_tokens += usage["input_tokens"]
+        self.output_tokens += usage["output_tokens"]
         text = "".join(b.text for b in response.content if b.type == "text")
         calls = [ToolCall(b.id, b.name, dict(b.input)) for b in response.content
                  if b.type == "tool_use"]
-        return Message("assistant", text, calls)
+        if response.stop_reason == "refusal":
+            details = getattr(response, "stop_details", None)
+            text = (text + "\n" if text else "") + "[The model declined this request" + \
+                   (f": {details.category}" if details and getattr(details, "category", None) else "") + "]"
+            calls = []
+        elif response.stop_reason == "max_tokens":
+            text += "\n[Reply cut at max_tokens; raise max_tokens for longer answers.]"
+        raw = [b.model_dump(exclude_none=True) for b in response.content]
+        return Message("assistant", text, calls, raw=raw, usage=usage)
+
+    def summary(self) -> dict[str, Any]:
+        return {"model": self.model, "calls": self.calls_made,
+                "input_tokens": self.input_tokens, "output_tokens": self.output_tokens}
 
 
 class OpenAIModel:
@@ -105,7 +139,11 @@ class OpenAIModel:
         msg = response.choices[0].message
         calls = [ToolCall(tc.id, tc.function.name, json.loads(tc.function.arguments or "{}"))
                  for tc in (msg.tool_calls or [])]
-        return Message("assistant", msg.content or "", calls)
+        usage = None
+        if response.usage:
+            usage = {"input_tokens": response.usage.prompt_tokens,
+                     "output_tokens": response.usage.completion_tokens}
+        return Message("assistant", msg.content or "", calls, usage=usage)
 
 
 def connect(provider: str = "anthropic", model: str | None = None):
@@ -114,7 +152,7 @@ def connect(provider: str = "anthropic", model: str | None = None):
 
     key = getpass(f"Paste your {provider} API key (input is hidden, kept in memory only): ").strip()
     if not key:
-        raise ValueError("No key given. The course runs fully without one; this step is optional.")
+        raise ValueError("No key given. Put ANTHROPIC_API_KEY in a .env file instead; see .env.example.")
     if provider == "anthropic":
         return AnthropicModel(model or "claude-opus-5", api_key=key)
     if provider == "openai":

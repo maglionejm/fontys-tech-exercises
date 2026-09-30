@@ -2,7 +2,7 @@
 
 **Where does the API key live?** In a file called `.env` at the root of the course repository, which git ignores. The template `.env.example` is tracked; the real file never is. Never paste a key into a notebook cell: the repository's checks reject notebooks that contain anything that looks like a key.
 
-**How is the key loaded in the notebooks?** With `python-dotenv`: `dotenv_values(path)` reads the file into a dictionary and the key is passed to the client explicitly as `anthropic.Anthropic(api_key=...)`. The notebooks never export the key into the process environment.
+**How is the key loaded in the notebooks?** In a fixed order, first hit wins: `python-dotenv` reads `.env` with `dotenv_values(path)`; failing that, the `ANTHROPIC_API_KEY` environment variable (this is how the repository's CI passes its secret); failing that, the Colab Secrets panel. The key is then passed to the client explicitly as `anthropic.Anthropic(api_key=...)`. The notebooks never export the key into the process environment themselves.
 
 **What does one notebook execution cost?** The budget is about 2 USD per notebook. Usage is printed after every experiment so students can see where the money went.
 

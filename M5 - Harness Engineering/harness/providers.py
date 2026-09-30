@@ -33,9 +33,14 @@ class AnthropicModel:
 
     def __init__(self, model: str = "claude-opus-5", api_key: str | None = None,
                  max_tokens: int = 4096, effort: str = "medium"):
+        import os
+
         import anthropic  # imported here so the course never requires the package
 
-        self.client = anthropic.Anthropic(api_key=api_key) if api_key else anthropic.Anthropic()
+        # Pass the key explicitly (from the argument or the environment loaded by
+        # harness.runtime) so the SDK skips its credential auto-discovery and stays quiet.
+        key = api_key or os.environ.get("ANTHROPIC_API_KEY")
+        self.client = anthropic.Anthropic(api_key=key) if key else anthropic.Anthropic()
         self.model = model
         self.name = model
         self.max_tokens = max_tokens

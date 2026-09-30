@@ -61,8 +61,13 @@ ROLES: dict[str, tuple[str, str]] = {
 _ALIASES = {"worker": "research"}      # scripted stand-in policies for roles without one
 
 
+_SECRET_KEYS = {"ANTHROPIC_API_KEY", "OPENAI_API_KEY"}
+_secrets: dict[str, str] = {}      # keys from .env stay here, out of os.environ and out of print()
+
+
 def load_env(start: str | Path | None = None) -> Optional[Path]:
-    """Load KEY=VALUE lines from the nearest .env file into os.environ (existing values win)."""
+    """Read the nearest .env file. Settings go to os.environ (existing values win);
+    API keys are kept in a private store and handed to the SDK client directly."""
     here = Path(start or Path.cwd()).resolve()
     for folder in [here, *here.parents]:
         candidate = folder / ".env"
@@ -72,14 +77,25 @@ def load_env(start: str | Path | None = None) -> Optional[Path]:
                 if not line or line.startswith("#") or "=" not in line:
                     continue
                 key, _, value = line.partition("=")
-                os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
+                key, value = key.strip(), value.strip().strip('"').strip("'")
+                if not value:
+                    continue
+                if key in _SECRET_KEYS:
+                    _secrets.setdefault(key, value)
+                else:
+                    os.environ.setdefault(key, value)
             return candidate
     return None
 
 
-def real_model_available() -> bool:
+def api_key(name: str = "ANTHROPIC_API_KEY") -> Optional[str]:
+    """The key from the shell environment or the .env store. Never print its return value."""
     load_env()
-    return bool(os.environ.get("ANTHROPIC_API_KEY"))
+    return os.environ.get(name) or _secrets.get(name)
+
+
+def real_model_available() -> bool:
+    return bool(api_key())
 
 
 def main_model_id() -> str:
@@ -101,7 +117,8 @@ def model_for(role: str, *, real: bool | None = None, effort: str | None = None
         from .providers import AnthropicModel
 
         model_id = main_model_id() if tier == "main" else worker_model_id()
-        return AnthropicModel(model_id, effort=effort or ("medium" if tier == "main" else "low")), prompt
+        return AnthropicModel(model_id, api_key=api_key(),
+                              effort=effort or ("medium" if tier == "main" else "low")), prompt
     policy = policies.POLICIES[_ALIASES.get(role, role)]
     return ScriptedModel(policy, name=f"scripted-{role}"), prompt
 
@@ -109,7 +126,7 @@ def model_for(role: str, *, real: bool | None = None, effort: str | None = None
 def describe_runtime() -> str:
     """One line for the top of a notebook: which engine will run today."""
     env_path = load_env()
-    if os.environ.get("ANTHROPIC_API_KEY"):
+    if api_key():
         where = f"key loaded from {env_path.name}" if env_path else "key from the environment"
         return (f"Engine: real Claude models - {main_model_id()} for lead agents, "
                 f"{worker_model_id()} for workers and judges ({where}; the key is never printed).")

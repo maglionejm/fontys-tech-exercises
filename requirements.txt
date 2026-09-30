@@ -24,5 +24,8 @@ uvicorn
 httpx
 requests
 
-# Real Claude models for Module 5 (used when ANTHROPIC_API_KEY is set; optional otherwise)
+# Module 5 (Harness Engineering) talks to real Claude models: the official SDK, the .env loader
+# and the eval case format. The key itself lives in a git-ignored .env (see .env.example).
 anthropic
+python-dotenv
+pyyaml

@@ -24,6 +24,10 @@ outputs/
 # Local scratch from coding agents and one-off experiments
 .codex-*/
 .claude/
+# ... except the Module 5 lab project, which ships its Claude Code configuration on purpose
+!M5 - Harness Engineering/lab/.claude/
+**/.claude/settings.local.json
+M5 - Harness Engineering/lab/**/*.log
 
 # Local site preview and Python build artifacts
 docs/.cache/

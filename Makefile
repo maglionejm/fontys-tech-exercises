@@ -28,7 +28,7 @@ $(BIN)/activate: requirements.txt requirements-dev.txt
 check: lint check-notebooks
 
 lint: setup
-	$(BIN)/ruff check presentations/src scripts
+	$(BIN)/ruff check presentations/src scripts "M5 - Harness Engineering/harness"
 
 check-notebooks: setup
 	$(BIN)/python scripts/check_notebooks.py
@@ -38,6 +38,7 @@ test-notebooks: setup
 
 decks: setup
 	cd presentations/src && for n in 1 2 3 4; do ../../$(BIN)/python build_session_$$n.py; done
+	cd presentations/src && for n in 1 2 3 4; do ../../$(BIN)/python build_m5_session_$$n.py; done
 
 site:
 	$(PY) -m http.server 8000 --directory docs

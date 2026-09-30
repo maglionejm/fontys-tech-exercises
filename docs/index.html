@@ -45,9 +45,9 @@
     <div class="sea" aria-hidden="true"></div>
     <div class="grain" aria-hidden="true"></div>
     <div class="hero-inner">
-      <p class="kicker reveal">A course in nine notebooks<span class="sep"></span>Fontys</p>
+      <p class="kicker reveal">A course in thirteen notebooks<span class="sep"></span>Fontys</p>
       <h1 class="reveal">The manifest that taught a machine to&nbsp;<em>predict</em></h1>
-      <p class="lede reveal">891 passengers. Twelve columns. One night in April 1912. Every notebook in this course works the same passenger list, from cleaning it to serving a model that reads it. This page tells the dataset's story and shows what the notebooks produce.</p>
+      <p class="lede reveal">891 passengers. Twelve columns. One night in April 1912. Every notebook in the first three modules works the same passenger list, from cleaning it to serving a model that reads it. This page tells the dataset's story and shows what the notebooks produce. A fourth module leaves the ship to teach harness engineering for AI agents.</p>
       <div class="hero-actions reveal">
         <a class="btn primary" href="https://colab.research.google.com/github/maglionejm/fontys-tech-exercises/blob/main/M1%20-%20Descriptive%20analytics/01-data-cleaning.ipynb" rel="noopener">Open notebook 1 in Colab</a>
         <a class="btn" href="#course">Browse the course</a>
@@ -385,7 +385,7 @@ Answered with status 200 well within the 5-second limit</code></pre>
   <!-- ============================== COURSE MAP ============================== -->
   <section class="chapter" id="course">
     <div class="chapter-head">
-      <p class="kicker">The course<span class="sep"></span>Three modules, nine notebooks</p>
+      <p class="kicker">The course<span class="sep"></span>Four modules, thirteen notebooks</p>
       <h2>Start anywhere. Every notebook stands alone.</h2>
       <p class="chapter-lede">Click a badge to open a notebook in Google Colab and choose <code>Runtime &gt; Run all</code>. No account, no key, no installation. Or read the executed outputs directly on GitHub.</p>
     </div>
@@ -414,6 +414,16 @@ Answered with status 200 well within the 5-second limit</code></pre>
           <li data-nb="02-deploying-models-in-the-cloud"><h3>Deploying models in the cloud</h3><p>FastAPI, tests before shipping, Docker, the same container on Cloud Run and App Runner.</p></li>
           <li data-nb="03-consuming-models-from-applications"><h3>Consuming models from applications</h3><p>A real server started in the notebook; requests with timeouts and retries; a web page that calls the model.</p></li>
         </ol>
+      </div>
+      <div class="module reveal">
+        <p class="kicker">Module 5<span class="sep"></span>Harness engineering</p>
+        <ol data-module="M5%20-%20Harness%20Engineering">
+          <li data-nb="01-from-prompts-to-harnesses"><h3>From prompts to harnesses</h3><p>The timeline from few-shot prompts to harness engineering; agent = model + harness; the same question answered by a bare model, a better prompt and a harness.</p></li>
+          <li data-nb="02-models-context-tools-and-skills"><h3>Models, context, tools and skills</h3><p>One model interface, context as a budget, tool design and MCP, permissions, skills with progressive disclosure.</p></li>
+          <li data-nb="03-building-a-harness"><h3>Building a harness</h3><p>The loop and its exits, hooks and guardrails, five workflow patterns, evals comparing three harness configurations, traces and cost.</p></li>
+          <li data-nb="04-sub-agents-teams-and-the-discipline"><h3>Sub-agents, teams and the discipline</h3><p>Isolated sub-agents, orchestrator-workers, agent teams on a shared board, handoffs, failure modes, the working discipline.</p></li>
+        </ol>
+        <p class="decks">Not about the Titanic: the agents research the module's own reading material. Runs without an API key. Four decks in <a href="https://github.com/maglionejm/fontys-tech-exercises/tree/main/presentations" rel="noopener">presentations/</a>.</p>
       </div>
     </div>
   </section>

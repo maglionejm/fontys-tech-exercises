@@ -17,6 +17,10 @@ body:
         - M3-01 ML system architectures
         - M3-02 Deploying models in the cloud
         - M3-03 Consuming models from applications
+        - M5-01 From prompts to harnesses
+        - M5-02 Models, context, tools and skills
+        - M5-03 Building a harness
+        - M5-04 Sub-agents, teams and the discipline
     validations:
       required: true
   - type: dropdown

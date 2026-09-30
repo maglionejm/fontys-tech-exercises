@@ -34,6 +34,10 @@ jobs:
           - "M3 - ML Architectures and Deployment/01-ml-system-architectures.ipynb"
           - "M3 - ML Architectures and Deployment/02-deploying-models-in-the-cloud.ipynb"
           - "M3 - ML Architectures and Deployment/03-consuming-models-from-applications.ipynb"
+          - "M5 - Harness Engineering/01-from-prompts-to-harnesses.ipynb"
+          - "M5 - Harness Engineering/02-models-context-tools-and-skills.ipynb"
+          - "M5 - Harness Engineering/03-building-a-harness.ipynb"
+          - "M5 - Harness Engineering/04-sub-agents-teams-and-the-discipline.ipynb"
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7

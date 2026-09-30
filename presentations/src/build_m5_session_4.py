@@ -516,8 +516,8 @@ def slides():
              "context fills up, the task has independent parts, or a "
              "specialist is needed. We cover the shapes - sub-agents, teams, "
              "handoffs - the failure modes, and then step back to what the "
-             "discipline demands. Part 2 is notebook 04 and lab 4. Ask the "
-             "class: when you split a job between people, what usually goes "
+             "discipline demands. Part 2 is notebook 04 and lab 4. Class "
+             "question: when you split a job between people, what usually goes "
              "wrong first?")
 
     # 2. Part 1 divider
@@ -527,7 +527,7 @@ def slides():
         "fail, and what the discipline of harness engineering looks like.")
     notes(s, "Part 1 moves from one agent to many: why to isolate context, "
              "the three shapes, the failure modes, and then the discipline "
-             "itself. Ask the class: what is the most agents you have seen "
+             "itself. Class question: what is the most agents you have seen "
              "cooperate on one task, and did it help?")
 
     # 3. Why isolate context
@@ -558,8 +558,8 @@ def slides():
              "brake. Sub-agents are the structural fix - the expensive "
              "exploration happens in a window you throw away, and only a "
              "short summary comes back. Point at the arrow widths: gray "
-             "brief out, blue summary back, nothing else crosses. Ask the "
-             "class: what would you lose if the sub-agent returned its whole "
+             "brief out, blue summary back, nothing else crosses. Class "
+             "question: what would you lose if the sub-agent returned its whole "
              "transcript instead of a summary?")
 
     # 4. The research system
@@ -581,7 +581,7 @@ def slides():
              "of the label louder than the first: fifteen times the tokens "
              "of a normal chat. The gain came from parallel exploration "
              "across separate context windows - exactly the isolation from "
-             "the previous slide. Ask the class: which kinds of task would "
+             "the previous slide. Class question: which kinds of task would "
              "NOT benefit from splitting - and why?")
 
     # 5. Lessons from the research system
@@ -617,7 +617,7 @@ def slides():
              "question deserves. The right is harness work: parallelism, "
              "memory, a citation pass, evals. Notice that the fix for "
              "wandering sub-agents was not a smarter model; it was a better "
-             "brief. Ask the class: write a one-line brief for a sub-agent "
+             "brief. Class question: write a one-line brief for a sub-agent "
              "that should find when function calling shipped - what would "
              "you include?")
 
@@ -638,8 +638,8 @@ def slides():
              "lead that assigns and synthesizes - more parallel, harder to "
              "reason about. Handoff: the conversation itself moves to a "
              "specialist and the first agent steps back. In plain words: a "
-             "convoy, a crew with one job board, a change of drivers. Ask "
-             "the class: which shape is a hospital triage desk?")
+             "convoy, a crew with one job board, a change of drivers. Class "
+             "question: which shape is a hospital triage desk?")
 
     # 7. Table: sub-agents vs teams vs handoffs
     s = ds.table_slide(
@@ -678,7 +678,7 @@ def slides():
              "cross-contamination - until two of them need the same fact. "
              "Teams fix that with a board and a mailbox at the price of "
              "coordination. Handoffs are different in kind: nothing is "
-             "summarized, the receiver gets everything. Ask the class: you "
+             "summarized, the receiver gets everything. Class question: you "
              "have 40 independent documents to summarize - which column, and "
              "what is the risk?")
 
@@ -722,7 +722,7 @@ def slides():
              "(0.0415 against 0.0444 USD) because the reading is the same "
              "and only the coordination differs: two cheap planner and "
              "synthesizer calls against two calls on the expensive lead "
-             "model. Ask the class: which side would you pick for a nightly "
+             "model. Class question: which side would you pick for a nightly "
              "report that must look the same every day?")
 
     # 9. Failure modes
@@ -768,7 +768,7 @@ def slides():
              "and adding a reviewer agent made things worse by eight points, "
              "probably because the reviewer second-guessed correct answers. "
              "The lesson is not 'never add agents'; it is 'never add an "
-             "agent without an eval that shows it helped'. Ask the class: "
+             "agent without an eval that shows it helped'. Class question: "
              "which of these six would a trace catch first?")
 
     # 10. The discipline
@@ -809,7 +809,7 @@ def slides():
              "harnesses could not tell you whether their last change helped. "
              "The eleven-harness study found the same thing from the code "
              "side: the loops are hand-rolled and the retrieval is "
-             "deterministic - engineering, not magic. Ask the class: which "
+             "deterministic - engineering, not magic. Class question: which "
              "of the six did your notebook 03 harness already have?")
 
     # 11. Quote
@@ -825,8 +825,8 @@ def slides():
              "module: the systems students read about - Claude Code, Codex "
              "CLI, Gemini CLI, Aider, OpenHands and the rest - are loops, "
              "tool registries and file search, written by hand. The harness "
-             "package in this course is the same species, smaller. Ask the "
-             "class: after four sessions, which line of the harness package "
+             "package in this course is the same species, smaller. Class "
+             "question: after four sessions, which line of the harness package "
              "would you now want to read in one of those eleven?")
 
     # 12. The future
@@ -858,7 +858,7 @@ def slides():
              "one year says everyone is building the same car; and the "
              "discipline now has a name and a first anatomy paper. The "
              "closing line of the module: models are bought, harnesses are "
-             "built. Ask the class: which of the eight pieces do you think "
+             "built. Class question: which of the eight pieces do you think "
              "will be standardized next, after tools (MCP) and skills?")
 
     # 13. Part 2 divider
@@ -875,7 +875,7 @@ def slides():
              "load_client() reads it. The numbers on the next slides are "
              "from the run recorded on 30 September 2026, which cost 0.4413 "
              "USD for the whole notebook; a live run will differ in wording, "
-             "in the route the model takes and in cents. Ask the class: "
+             "in the route the model takes and in cents. Class question: "
              "which of the three shapes do you expect to cost the most "
              "tokens, and why?")
 
@@ -914,7 +914,7 @@ def slides():
              "the query': the sub-agent design earns its cost when the "
              "question has ten facts or the files are ten times longer, "
              "because then the solo context keeps growing and you cannot "
-             "tell which fact it dropped without a grader. Ask the class: "
+             "tell which fact it dropped without a grader. Class question: "
              "how would you change the question so that the solo agent "
              "does drop a part?")
 
@@ -949,7 +949,7 @@ def slides():
              "parallel work moved 19.9 seconds of work into 7.5. The "
              "four-teammate exercise makes the point twice: with six tasks "
              "and four hands you still need two rounds, so nothing is saved "
-             "and the cost is unchanged. Ask the class: what breaks first "
+             "and the cost is unchanged. Class question: what breaks first "
              "if two teammates claim the same task at the same time, and "
              "which line of TaskBoard prevents it?")
 
@@ -983,7 +983,7 @@ def slides():
              "tool calls and its answer - 7,017 tokens on the first call and "
              "again on the second. That is why the survey found chains of "
              "more than four handoffs almost always fail: the history grows "
-             "and the intent blurs. Ask the class: when is inheriting the "
+             "and the intent blurs. Class question: when is inheriting the "
              "full history actually necessary, and what would a summary "
              "lose in that case?")
 
@@ -1021,7 +1021,7 @@ def slides():
              "seatbelt, max_turns=4, which stopped a second run after four "
              "calls. Neither produced a summary; together they cost about "
              "seven cents. A trace is how you notice a runaway before the "
-             "invoice does. Ask the class: what would a smarter guard look "
+             "invoice does. Class question: what would a smarter guard look "
              "at, so it could stop this task after the second call instead "
              "of the fifth?")
 
@@ -1058,7 +1058,7 @@ def slides():
              "on the strong model is the expensive part. Anthropic's "
              "research system paid fifteen times the tokens for its 90.2 "
              "percent gain: a good trade for a hard question, a terrible "
-             "one for a lookup. Ask the class: which row would you delete "
+             "one for a lookup. Class question: which row would you delete "
              "from your own design first, and what eval would you run "
              "before adding it back?")
 
@@ -1098,7 +1098,7 @@ def slides():
              "correctly that the repository does not contain a dean, but it "
              "searched only the lab folder, because --add-dir allows a read "
              "and does not tell the model where to look - teach the "
-             "orchestrator how to delegate. Ask the class: which front "
+             "orchestrator how to delegate. Class question: which front "
              "matter field would you change so that the fact-checker "
              "subagent can never be given write tools by mistake?")
 
@@ -1151,7 +1151,7 @@ def slides():
              "modes are the permission argument with more shapes, dontAsk is "
              "what you use when nobody is there to answer, and agent teams "
              "are one environment variable away - interactive only, so the "
-             "recorded runs could not form one. Ask the class: which of "
+             "recorded runs could not form one. Class question: which of "
              "these four controls would you add to your notebook 03 harness "
              "first, and why that one?")
 
@@ -1189,7 +1189,7 @@ def slides():
              "Claude Code and GitHub Actions. Students have run every one of "
              "them. The point of the middle column is that the car metaphor "
              "was never decoration - each piece answers one question a "
-             "driver would ask. Ask the class: which piece would you replace "
+             "driver would ask. Class question: which piece would you replace "
              "first if this harness went to production, and with what?")
 
     # 22. Close
@@ -1217,7 +1217,7 @@ def slides():
              "printed after every experiment. The last line is the "
              "invitation: the parts they built by hand exist as product "
              "features, and now they can read those features for what they "
-             "are. Ask the class: what is the first agent you would build "
+             "are. Class question: what is the first agent you would build "
              "with this, and which of the eight pieces would you spend most "
              "of your time on?")
     return prs

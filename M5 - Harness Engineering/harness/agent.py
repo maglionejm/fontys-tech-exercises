@@ -8,7 +8,7 @@ stop conditions (max turns, budget, done).
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Callable, Iterable
+from typing import Callable, Iterable, Optional
 
 from .context import ContextWindow
 from .messages import Message, ToolCall, estimate_tokens
@@ -17,9 +17,9 @@ from .skills import SkillIndex
 from .tools import Tool, ToolRegistry
 from .trace import Trace
 
-BeforeTool = Callable[[ToolCall, Tool | None], str | None]   # return a reason to deny
+BeforeTool = Callable[[ToolCall, Optional[Tool]], Optional[str]]   # return a reason to deny
 AfterTool = Callable[[ToolCall, str], str]                   # may rewrite the result
-Validator = Callable[[str], str | None]                      # return a problem to fix
+Validator = Callable[[str], Optional[str]]                      # return a problem to fix
 
 
 @dataclass

@@ -3,6 +3,7 @@ name: Harness package
 # Unit tests always; the eval suite only when the repository secret
 # ANTHROPIC_API_KEY exists. The secret is read into the job environment and every
 # step of the evals job skips cleanly when it is empty (forks and Dependabot do not
+# receive secrets).
 on:
   pull_request:
     paths:

@@ -6,4 +6,4 @@ nbconvert>=7.17.1
 ipykernel>=7.3.0
 httpx>=0.28.1
 python-pptx>=1.0.2
-ruff>=0.16.8
+ruff>=0.16.9

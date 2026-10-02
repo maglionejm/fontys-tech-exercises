@@ -39,3 +39,6 @@ dist/
 .env
 .env.*
 !.env.example
+
+# Gradio cache written next to the M2 deployment notebook
+.gradio/

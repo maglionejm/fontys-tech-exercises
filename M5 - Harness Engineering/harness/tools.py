@@ -1,126 +1,142 @@
-"""Tools: Python functions the model may call by name.
+"""Tools: Python functions the model may ask the harness to run.
 
-A tool has a name, a description the model reads, a JSON schema for its
-arguments, the function itself, and a risk level the harness can gate on.
+``@tool`` turns a function into a ``Tool`` whose JSON schema (the API's
+``input_schema``) is built from the signature and the docstring, so the
+description the model reads and the code that runs never drift apart.
 """
 from __future__ import annotations
 
 import inspect
-import json
+import re
 import typing
-from dataclasses import dataclass
-from typing import Any, Callable
+from dataclasses import dataclass, field
+from typing import Any, Callable, Iterable
 
-from .messages import ToolCall
-
-JSON_TYPES = {str: "string", int: "integer", float: "number", bool: "boolean",
-              list: "array", dict: "object"}
 RISK_LEVELS = ("read", "write", "danger")
+_JSON_TYPES = {str: "string", int: "integer", float: "number", bool: "boolean", list: "array", dict: "object"}
+_PARAM_LINE = re.compile(r"^\s*(\w+)\s*:\s*(.+?)\s*$")
 
 
 @dataclass
 class Tool:
+    """One tool: a callable plus what the model is told about it."""
+
     name: str
     description: str
-    parameters: dict[str, Any]
+    input_schema: dict
     fn: Callable[..., Any]
     risk: str = "read"
 
-    def schema(self) -> dict[str, Any]:
-        """What the model sees: name, description, argument schema."""
-        return {"name": self.name, "description": self.description,
-                "parameters": self.parameters}
+    def schema(self) -> dict:
+        """The dict the Messages API expects in ``tools=[...]``."""
+        return {"name": self.name, "description": self.description, "input_schema": self.input_schema}
 
-    def call(self, arguments: dict[str, Any]) -> str:
-        """Run the tool. Errors come back as text the model can act on."""
-        try:
-            result = self.fn(**arguments)
-        except TypeError as exc:
-            expected = list(self.parameters.get("properties", {}))
-            return f"Error: bad arguments for {self.name}: {exc}. Expected {expected}."
-        except Exception as exc:  # noqa: BLE001 - the model must see any failure
-            return f"Error: {self.name} failed with {type(exc).__name__}: {exc}"
-        if isinstance(result, str):
-            return result
-        return json.dumps(result, ensure_ascii=False)
+    def __call__(self, *args: Any, **kwargs: Any) -> Any:
+        return self.fn(*args, **kwargs)
 
 
-def tool(fn: Callable | None = None, *, name: str | None = None,
-         description: str | None = None, risk: str = "read") -> Any:
-    """Decorator: build a Tool from a function's signature and docstring.
+def _json_type(annotation: Any) -> dict:
+    """Map a Python annotation to a JSON schema fragment (strings by default)."""
+    origin = typing.get_origin(annotation)
+    if origin is typing.Literal:
+        return {"type": "string", "enum": list(typing.get_args(annotation))}
+    if origin in (list, typing.List):
+        args = typing.get_args(annotation)
+        return {"type": "array", "items": _json_type(args[0]) if args else {"type": "string"}}
+    return {"type": _JSON_TYPES.get(annotation, "string")}
 
-    The first paragraph of the docstring becomes the description the model
-    reads. Lines of the form "argument: explanation" describe each argument.
+
+def schema_from_function(fn: Callable[..., Any]) -> tuple[str, dict]:
+    """Return (description, input_schema) from a function's signature and docstring.
+
+    Docstring lines shaped ``name: text`` describe the parameter ``name``; every
+    other line becomes part of the tool description.
+    """
+    signature = inspect.signature(fn)
+    hints = typing.get_type_hints(fn)
+    param_docs: dict[str, str] = {}
+    description_lines: list[str] = []
+    for line in inspect.getdoc(fn).splitlines() if fn.__doc__ else []:
+        match = _PARAM_LINE.match(line)
+        if match and match.group(1) in signature.parameters:
+            param_docs[match.group(1)] = match.group(2)
+        else:
+            description_lines.append(line)
+    properties: dict[str, dict] = {}
+    required: list[str] = []
+    for name, param in signature.parameters.items():
+        prop = _json_type(hints.get(name, str))
+        if name in param_docs:
+            prop["description"] = param_docs[name]
+        properties[name] = prop
+        if param.default is inspect.Parameter.empty:
+            required.append(name)
+    description = " ".join(" ".join(description_lines).split()) or fn.__name__
+    schema: dict = {"type": "object", "properties": properties, "required": required}
+    return description, schema
+
+
+def tool(fn: Callable[..., Any] | None = None, *, risk: str = "read", name: str | None = None):
+    """Decorator: ``@tool`` or ``@tool(risk="write")``.
+
+    ``risk`` is one of ``read`` (looks at things), ``write`` (changes files or
+    state) or ``danger`` (can run arbitrary code, spend money, reach outside).
+    The permission rule of an ``Agent`` decides by this label.
     """
     if risk not in RISK_LEVELS:
-        raise ValueError(f"risk must be one of {RISK_LEVELS}")
+        raise ValueError(f"risk must be one of {RISK_LEVELS}, got {risk!r}")
 
-    def wrap(f: Callable) -> Tool:
-        sig = inspect.signature(f)
-        hints = typing.get_type_hints(f)
-        props: dict[str, Any] = {}
-        required: list[str] = []
-        for pname, param in sig.parameters.items():
-            ptype = hints.get(pname, str)
-            origin = typing.get_origin(ptype) or ptype
-            props[pname] = {"type": JSON_TYPES.get(origin, "string")}
-            if param.default is inspect.Parameter.empty:
-                required.append(pname)
-            else:
-                props[pname]["default"] = param.default
-        doc = inspect.getdoc(f) or ""
-        for line in doc.splitlines():
-            key, sep, desc = line.partition(":")
-            if sep and key.strip() in props and desc.strip():
-                props[key.strip()]["description"] = desc.strip()
-        summary = doc.split("\n\n")[0].strip() if doc else f"Call {f.__name__}."
-        return Tool(name=name or f.__name__, description=description or summary,
-                    parameters={"type": "object", "properties": props, "required": required},
-                    fn=f, risk=risk)
+    def wrap(function: Callable[..., Any]) -> Tool:
+        description, schema = schema_from_function(function)
+        return Tool(name or function.__name__, description, schema, function, risk)
 
     return wrap(fn) if fn is not None else wrap
 
 
+@dataclass
 class ToolRegistry:
-    """The toolbox the harness hands to the model."""
+    """The tools one agent may use, looked up by name."""
 
-    def __init__(self, tools: typing.Iterable[Tool] = ()):
-        self._tools: dict[str, Tool] = {}
-        for t in tools:
-            self.add(t)
+    tools: dict[str, Tool] = field(default_factory=dict)
 
-    def add(self, t: Tool) -> Tool:
-        self._tools[t.name] = t
-        return t
+    def __init__(self, tools: Iterable[Tool | Callable[..., Any]] = ()):
+        self.tools = {}
+        for item in tools:
+            self.add(item)
 
-    def remove(self, name: str) -> None:
-        self._tools.pop(name, None)
+    def add(self, item: Tool | Callable[..., Any]) -> Tool:
+        entry = item if isinstance(item, Tool) else tool(item)
+        self.tools[entry.name] = entry
+        return entry
 
     def get(self, name: str) -> Tool | None:
-        return self._tools.get(name)
+        return self.tools.get(name)
 
-    def names(self) -> list[str]:
-        return list(self._tools)
-
-    def schemas(self) -> list[dict[str, Any]]:
-        return [t.schema() for t in self._tools.values()]
-
-    def describe(self) -> str:
-        """A compact catalog for a system prompt: one line per tool."""
-        return "\n".join(f"- {t.name}: {t.description}" for t in self._tools.values())
-
-    def call(self, request: ToolCall) -> str:
-        t = self.get(request.name)
-        if t is None:
-            return (f"Error: unknown tool '{request.name}'. "
-                    f"Available tools: {', '.join(self.names()) or 'none'}.")
-        return t.call(request.arguments)
-
-    def __len__(self) -> int:
-        return len(self._tools)
+    def schemas(self) -> list[dict]:
+        """Sorted by name so the request prefix (and the prompt cache) stays stable."""
+        return [self.tools[name].schema() for name in sorted(self.tools)]
 
     def __iter__(self):
-        return iter(self._tools.values())
+        return iter(self.tools.values())
 
-    def __contains__(self, name: str) -> bool:
-        return name in self._tools
+    def __len__(self) -> int:
+        return len(self.tools)
+
+    def __contains__(self, name: object) -> bool:
+        return name in self.tools
+
+
+def deny_risk(*levels: str) -> Callable[[Tool], bool]:
+    """A permission rule that refuses every tool whose risk is in ``levels``."""
+    denied = set(levels)
+
+    def permission(candidate: Tool) -> bool:
+        return candidate.risk not in denied
+
+    permission.__name__ = f"deny_risk({', '.join(levels)})"
+    return permission
+
+
+def allow_all(candidate: Tool) -> bool:
+    """A permission rule that lets every tool run (use it knowingly)."""
+    return True

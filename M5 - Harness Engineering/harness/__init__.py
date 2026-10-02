@@ -1,22 +1,31 @@
-"""harness - a small, readable agent harness for the Harness Engineering module.
+"""harness: a small, readable agent harness on the official Anthropic SDK.
 
-Everything here is teaching code: plain Python, no framework, no API key
-required. Import what a notebook needs:
+    from harness import Agent, tool, load_client, list_files, read_file
 
-    from harness import Agent, ScriptedModel, ToolRegistry, tool
-    from harness.demo_tools import search_docs, read_doc, check_citation
-    from harness.policies import research_policy
+    agent = Agent(load_client(), tools=[list_files, read_file])
+    result = agent.run("Which licence does this repository use?")
+    print(result.answer); result.trace.show()
+
+One file per piece: client (key, models, prices), tools (schemas, risk levels),
+hooks (your code inside the loop), trace (the flight recorder), loop (the
+agent), repo_tools (the tools of this module), evals (cases, graders,
+reports), cli (python -m harness).
 """
-from .agent import Agent, Hooks, RunResult, allow_all, deny_risk
-from .context import ContextWindow, Notes
-from .messages import Message, ToolCall, estimate_tokens, total_tokens
-from .models import ModelView, ScriptedModel, call, calls, say
-from .skills import Skill, SkillIndex, load_skills
-from .tools import Tool, ToolRegistry, tool
+from .client import (MAIN_MODEL, PRICES, WORKER_MODEL, MissingKeyError, Usage, cost_usd, load_client,
+                     price_for)
+from .evals import ANSWER_SCHEMA, RESEARCHER_SYSTEM, EvalCase, Report, compare, grade, load_cases, run_evals
+from .hooks import Hooks, ToolRequest, deny_paths, deny_risk_hook, require_sources, truncate_result
+from .loop import Agent, RunResult, text_of
+from .repo_tools import (clear_notes, list_files, read_file, read_notes, repo_root, run_shell, set_notes_path,
+                         set_repo_root, write_note)
+from .tools import Tool, ToolRegistry, allow_all, deny_risk, schema_from_function, tool
 from .trace import Event, Trace
 
-__version__ = "0.1.1"
-__all__ = ["Agent", "Hooks", "RunResult", "allow_all", "deny_risk", "ContextWindow", "Notes",
-           "Message", "ToolCall", "estimate_tokens", "total_tokens", "ModelView",
-           "ScriptedModel", "call", "calls", "say", "Skill", "SkillIndex", "load_skills",
-           "Tool", "ToolRegistry", "tool", "Event", "Trace"]
+__all__ = [
+    "Agent", "RunResult", "Trace", "Event", "Hooks", "ToolRequest", "tool", "Tool", "ToolRegistry",
+    "deny_risk", "allow_all", "deny_paths", "deny_risk_hook", "require_sources", "truncate_result",
+    "load_client", "MissingKeyError", "MAIN_MODEL", "WORKER_MODEL", "PRICES", "Usage", "cost_usd", "price_for",
+    "repo_root", "set_repo_root", "list_files", "read_file", "write_note", "read_notes", "run_shell",
+    "set_notes_path", "clear_notes", "EvalCase", "Report", "ANSWER_SCHEMA", "RESEARCHER_SYSTEM",
+    "load_cases", "grade", "run_evals", "compare", "schema_from_function", "text_of",
+]

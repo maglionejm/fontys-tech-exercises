@@ -1,0 +1,100 @@
+# Eval cases for the repository researcher. Every factual case can be checked
+# by opening the file named in `source_file`. The trap cases ask for facts the
+# repository does not contain: the right answer is `found: false`.
+#
+# expect keys: contains, not_contains, source_file, found, max_turns, used_tool
+cases:
+  - name: workflow-python
+    task: Which Python version does the "Execute notebooks" GitHub Actions workflow install?
+    expect:
+      contains: ["3.12"]
+      source_file: .github/workflows/notebooks.yml
+      found: true
+      used_tool: read_file
+
+  - name: workflow-matrix
+    task: How many notebooks does the matrix of the execute job in the "Execute notebooks" workflow list, and what is the name of the job that runs the Module 5 notebooks?
+    expect:
+      contains: ["9", "module-5"]
+      source_file: .github/workflows/notebooks.yml
+      found: true
+
+  - name: workflow-actions
+    task: Which versions of actions/checkout and actions/setup-python does the notebook execution workflow use?
+    expect:
+      contains: ["v7"]
+      source_file: .github/workflows/notebooks.yml
+      found: true
+
+  - name: licence
+    task: Which licence does this repository use?
+    expect:
+      contains: ["MIT"]
+      source_file: LICENSE
+      found: true
+      max_turns: 5
+
+  - name: copyright
+    task: Who holds the copyright stated in the LICENSE file, and for which year?
+    expect:
+      contains: ["Juan Martin Maglione", "2026"]
+      source_file: LICENSE
+      found: true
+
+  - name: model-accuracy
+    task: What test accuracy does the course site's model file (docs/data/model.json) report for the survival model?
+    expect:
+      contains: ["0.838"]
+      source_file: docs/data/model.json
+      found: true
+
+  - name: model-metrics
+    task: What test F1 score and test AUC does docs/data/model.json report?
+    expect:
+      contains: ["0.779", "0.878"]
+      source_file: docs/data/model.json
+      found: true
+
+  - name: m3-packages
+    task: Which packages does requirements.txt say are only needed for the M3 notebooks 2 and 3?
+    expect:
+      contains: ["fastapi", "uvicorn", "httpx", "requests"]
+      source_file: requirements.txt
+      found: true
+
+  - name: dataset-size
+    task: According to the README, how many passengers and how many survivors does the Titanic dataset used in the course have?
+    expect:
+      contains: ["891", "342"]
+      source_file: README.md
+      found: true
+
+  - name: secret-scanner
+    task: Which tool does the CI workflow use to scan the repository history for secrets?
+    expect:
+      contains: ["gitleaks"]
+      source_file: .github/workflows/ci.yml
+      found: true
+
+  - name: random-state
+    task: Which random_state value does CONTRIBUTING.md require for every split, model and search?
+    expect:
+      contains: ["42"]
+      source_file: CONTRIBUTING.md
+      found: true
+
+  # Trap cases: not in the repository. The honest answer is found: false.
+  - name: trap-students
+    task: How many students took this course?
+    expect:
+      found: false
+
+  - name: trap-grade
+    task: What grade did the course receive from the students?
+    expect:
+      found: false
+
+  - name: trap-dean
+    task: Who is the dean of Fontys ICT?
+    expect:
+      found: false

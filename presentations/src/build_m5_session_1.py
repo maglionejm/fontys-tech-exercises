@@ -1,9 +1,11 @@
 """Build deck: M5 Session 1 - From Prompts to Harnesses.
 
 Theory from the Module 5 course brief (timeline, definitions, evidence, the
-eight pieces); practice numbers from notebook 01 as recorded in the brief's
-appendix (bare prompt 26 tokens; harness 4 model calls, 3 tool calls,
-~1,980 tokens). Every fact is attributed on its slide.
+eight pieces); practice numbers read from the executed notebook 01
+(raw Anthropic SDK, recorded run on claude-opus-5, 30 Sep 2026): bare prompt
+39 input tokens, careful prompt 115, hand-written loop 3 model calls, 3 tool
+calls, 4,113 input tokens; SDK tool_runner 4,251. Every fact is attributed
+on its slide.
 """
 import os
 
@@ -38,6 +40,34 @@ def _mono_first_column(slide, size=11):
                     run.font.name = "Courier New"
                     run.font.size = ds.Pt(size)
                     run.font.color.rgb = ds.NAVY
+
+
+def _table_font(slide, size=11, header_size=None):
+    """Shrink the body (and optionally header) text of the slide's table."""
+    for shp in slide.shapes:
+        if not shp.has_table:
+            continue
+        table = shp.table
+        for r in range(len(table.rows)):
+            for c in range(len(table.columns)):
+                for p in table.cell(r, c).text_frame.paragraphs:
+                    for run in p.runs:
+                        if r == 0:
+                            if header_size:
+                                run.font.size = ds.Pt(header_size)
+                        else:
+                            run.font.size = ds.Pt(size)
+
+
+def _panel_font(slide, size=12):
+    """Shrink the 13 pt body lines of a two-column slide's panels."""
+    for shp in slide.shapes:
+        if not shp.has_text_frame:
+            continue
+        for p in shp.text_frame.paragraphs:
+            for run in p.runs:
+                if run.font.size == ds.Pt(13):
+                    run.font.size = ds.Pt(size)
 
 
 # ------------------------------------------------------------------ figures
@@ -263,22 +293,25 @@ def make_eight_pieces_fig():
     plt.close(fig)
 
 
+RUN = "recorded run on claude-opus-5, 30 Sep 2026; live runs vary"
+RUN_CAP = "Recorded run on claude-opus-5, 30 Sep 2026; live runs vary"
+
+
 def make_trace_fig():
-    """The trace of the harnessed run in notebook 01: 4 model calls and
-    3 tool calls, in order. Steps from the brief's appendix."""
+    """The route of the hand-written loop in notebook 01 (cell 23 output):
+    3 model calls and 3 tool calls, in order, with the usage per call."""
     fig, ax = plt.subplots(figsize=(7.6, 4.8))
     my, ty = 3.3, 1.35
     steps = [
-        ("m", "model call 1\nasks for\nsearch_docs"),
-        ("t", "search_docs\nreturns\n3 matches"),
-        ("m", "model call 2\nasks for\nread_doc"),
-        ("t", "read_doc\nreturns the\nfull text"),
-        ("m", "model call 3\nasks for\ncheck_citation"),
-        ("t", "check_citation\nreturns\nOK"),
-        ("m", "model call 4\nfinal answer\n+ [source: ...]"),
+        ("m", "model call 1\ninput 702\noutput 111\nasks 2 listings"),
+        ("t", "list_files('.')\nreturns\n288 chars"),
+        ("t", "list_files\n(.github/\nworkflows)\n42 chars"),
+        ("m", "model call 2\ninput 1,052\noutput 60\nasks read_file"),
+        ("t", "read_file\n(notebooks.yml)\n2,809 chars"),
+        ("m", "model call 3\ninput 2,359\noutput 179\nend_turn: answer"),
     ]
-    bw, bh = 1.46, 1.25
-    xs = [0.25 + i * 1.56 for i in range(len(steps))]
+    bw, bh = 1.78, 1.25
+    xs = [0.25 + i * 1.88 for i in range(len(steps))]
     for i, (x, (kind, label)) in enumerate(zip(xs, steps)):
         y = my if kind == "m" else ty
         fc = pal["blue"] if kind == "m" else pal["panel"]
@@ -287,8 +320,7 @@ def make_trace_fig():
                                     facecolor=fc, edgecolor=pal["blue"],
                                     lw=1.3))
         ax.text(x + bw / 2, y + bh / 2, label, ha="center", va="center",
-                color=tc, fontsize=7.8, linespacing=1.25,
-                fontweight="bold" if kind == "m" and i == 6 else "normal")
+                color=tc, fontsize=7.6, linespacing=1.25)
         if i:
             px = xs[i - 1] + bw
             py = my + bh / 2 if steps[i - 1][0] == "m" else ty + bh / 2
@@ -296,47 +328,54 @@ def make_trace_fig():
                                          arrowstyle="-|>", mutation_scale=12,
                                          color=pal["gray"], lw=1.2,
                                          shrinkA=1, shrinkB=1))
-    ax.text(-0.05, my + bh / 2, "MODEL\n(4 calls)", ha="right", va="center",
+    ax.text(-0.05, my + bh / 2, "MODEL\n(3 calls)", ha="right", va="center",
             fontsize=9, fontweight="bold", color=pal["blue"])
     ax.text(-0.05, ty + bh / 2, "TOOLS\n(3 calls)", ha="right", va="center",
             fontsize=9, fontweight="bold", color=pal["navy"])
-    ax.text(xs[-1] + bw / 2, my + bh + 0.25, "the loop stops:\nno tool call left",
+    ax.text(xs[-1] + bw / 2, my + bh + 0.25,
+            "no tool_use block:\nstop_reason end_turn",
             ha="center", va="bottom", fontsize=8.2, color=pal["gray"],
             linespacing=1.2)
-    ax.text(5.35, 0.55, "one run, ~1,980 estimated tokens across the 4 model "
-            "calls;\nthe answer carries [source: model-context-protocol]",
+    ax.text(5.35, 0.55, "3 model calls, 3 tool calls: 4,113 input tokens, "
+            "350 output tokens, 0.0293 USD\n" + RUN,
             ha="center", va="center", fontsize=9, color=pal["navy"],
             fontweight="bold", linespacing=1.3)
-    ax.set_xlim(-1.3, 11.2)
+    ax.set_xlim(-1.3, 11.6)
     ax.set_ylim(0.1, 5.4)
     ax.axis("off")
-    ax.set_title("The trace: every step of the harnessed run, in order",
+    ax.set_title("What the loop printed: every tool_use and tool_result, in order",
                  fontsize=12.5)
     fig.savefig(f"{FIGS}/s1_trace.png")
     plt.close(fig)
 
 
 def make_tokens_fig():
-    """Estimated tokens per approach in notebook 01 (brief appendix)."""
+    """Input tokens per approach in notebook 01 (cell 25 table)."""
     fig, ax = plt.subplots(figsize=(7.6, 4.8))
     names = ["Bare prompt\n(1 model call, no tools)",
-             "Prompt-engineered\n(1 model call, no tools)",
-             "Harness\n(4 model calls, 3 tool calls)"]
-    vals = [26, 39, 1980]
-    labels = ["~26 tokens, wrong", "~39 tokens, wrong", "~1,980 tokens, right and cited"]
+             "Careful system prompt\n(1 model call, no tools)",
+             "Harness: two tools, a loop\n(3 model calls, 3 tool calls)"]
+    vals = [39, 115, 4113]
+    labels = ["39 in, 549 out, 0.0139 USD, no checkable fact",
+              "115 in, 481 out, 0.0126 USD, no checkable fact",
+              "4,113 in, 350 out, 0.0293 USD, the fact and the file"]
     ax.barh(names, vals, color=[pal["sky"], pal["sky"], pal["blue"]], height=0.5)
     for i, (v, lab) in enumerate(zip(vals, labels)):
-        ax.text(v + 25, i, lab, va="center", fontsize=11,
-                fontweight="bold", color=pal["ink"])
-    ax.text(1500, 1.55, "about 76x the tokens of the bare prompt -\nand the "
-            "only right answer", ha="center", va="center", fontsize=10.5,
-            color=pal["navy"], fontweight="bold", linespacing=1.3)
-    ax.set_xlim(0, 2650)
+        if i < 2:
+            ax.text(v + 45, i, lab, va="center", fontsize=10.5,
+                    fontweight="bold", color=pal["ink"])
+        else:
+            ax.text(v - 60, i, lab, va="center", ha="right", fontsize=10.5,
+                    fontweight="bold", color="white")
+    ax.set_xlim(0, 5000)
     ax.set_ylim(-0.6, 2.6)
     ax.invert_yaxis()
-    ax.set_xlabel("estimated tokens for the whole run (bar length = cost)")
+    ax.set_xlabel("input tokens sent to the model, all calls added up "
+                  "(bar length = what the model had to read)")
     ax.tick_params(axis="y", labelsize=10.5)
-    ax.set_title("What each approach cost in notebook 01")
+    ax.set_title("Same question, three approaches, model: claude-opus-5")
+    ax.grid(axis="x", alpha=0.3)
+    ax.set_axisbelow(True)
     fig.tight_layout()
     fig.savefig(f"{FIGS}/s1_tokens.png")
     plt.close(fig)
@@ -556,8 +595,8 @@ def slides():
         f"{FIGS}/s1_eight_pieces.png",
         kicker="Anatomy",
         caption="Illustration. How to read it: the numbered order is the "
-                "canon order used in every deck and in the harness library. "
-                "Pieces 1-4 are Session 2; 5, 6, 8 are Session 3; 7 is Session 4.",
+                "canon order of every deck and of the harness package. "
+                "Pieces 1-4: Session 2; 5, 6, 8: Session 3; 7: Sessions 3-4.",
     )
     notes(s, "Read the ring clockwise from the top and give each piece its "
              "plain-words line: context is everything the model sees on one "
@@ -651,19 +690,23 @@ def slides():
         ["Term", "In plain words", "Where you will meet it today"],
         [
             ["Model", "The text-in, text-out engine; anything that maps a "
-             "context to the next message", "ScriptedModel in notebook 01 - "
-             "no API key needed"],
-            ["Prompt", "The words you send", "The bare and the improved "
-             "prompt"],
+             "context to the next message", "client.messages.create(model="
+             "'claude-opus-5'); client.models.retrieve for its real facts"],
+            ["Prompt", "The words you send", "The bare prompt and the careful "
+             "system prompt"],
             ["Context", "Everything the model sees in one call",
-             "The system prompt plus the tool results in the trace"],
+             "The system prompt, the messages list and every tool result; "
+             "usage.input_tokens counts it"],
             ["Tool", "A function the model asks for by name, with JSON "
-             "arguments; the harness runs it", "search_docs, read_doc, "
-             "check_citation"],
+             "arguments; the harness runs it", "list_files and read_file, "
+             "once as Python and once as JSON (name, description, "
+             "input_schema)"],
             ["Harness", "The runtime around the model: loop, tools, context, "
-             "checks", "The 15-line loop"],
-            ["Trace", "The record of every step: messages, tool calls, "
-             "tokens, time", "result.trace.show()"],
+             "checks", "The forty-line loop run_agent; then the SDK's "
+             "tool_runner"],
+            ["Usage", "The receipt the API returns with every response: "
+             "input_tokens and output_tokens", "response.usage after every "
+             "call; cost_usd turns it into dollars; the bill at the end"],
         ],
         kicker="Glossary",
         note="Definitions follow the Module 5 course brief; the same lines "
@@ -677,207 +720,340 @@ def slides():
     # 13. Part 2 divider
     s = ds.section_slide(
         prs, "02",
-        "Part 2 - The practice: one question, three ways",
-        "Notebook 01: a bare prompt, a better prompt, and a 15-line harness "
-        "answer the same question. Then we read the trace.",
+        "Part 2 - The practice: one question, three ways, on the raw SDK",
+        "Notebook 01: a bare prompt, a careful system prompt, and a "
+        "forty-line loop with two tools answer the same question about this "
+        "repository, on the real claude-opus-5.",
     )
-    notes(s, "Open notebook 01 in Colab now; the first cell downloads the "
-             "small harness library, no key needed. Everything in Part 2 is "
-             "printed by the notebook, so students can follow on their own "
-             "screen. Class question: what do you expect the bare model to "
-             "answer, and why?")
+    notes(s, "Open notebook 01 now. It needs an ANTHROPIC_API_KEY in a "
+             "git-ignored .env at the repository root, or a Colab secret; the "
+             "setup cell stops with one sentence if it finds none. Everything "
+             "in Part 2 is printed by the notebook from a real run, recorded "
+             "on 30 Sep 2026. A live run today differs in wording, route and "
+             "tokens, and the notebook says 'in the run recorded here' "
+             "wherever it quotes a result. Class question: what do you expect "
+             "the bare model to answer about a repository it has never seen, "
+             "and why?")
 
-    # 14. Same question, three ways
+    # 14. The setup, the question, the three answers in words
+    s = ds.two_col_slide(
+        prs,
+        "The setup: a real client, a real model, and a question no model can "
+        "know from training",
+        ("What we send", [
+            "The official Anthropic SDK 1.9.0; the key comes from .env "
+            "through dotenv_values and goes to the client, nowhere else",
+            "client.models.retrieve: Claude Opus 5, a 1,000,000-token "
+            "context window, 128,000 output tokens at most",
+            "Every call: max_tokens 2000 and effort medium, so only the "
+            "machinery around the model changes",
+            "The question: which Python version does the notebook workflow "
+            "use, and how many notebooks does its matrix run?",
+            "The file that settles it, .github/workflows/notebooks.yml: "
+            "python-version 3.12 and 9 notebooks in the matrix",
+        ]),
+        ("What came back, in the recorded run", [
+            "Bare prompt: 'I don't have access to the repository you're "
+            "referring to ... Paste the workflow YAML and I'll give you the "
+            "exact version and count.'",
+            "Careful system prompt: 'I can't answer that - I have no access "
+            "to this repository's files', then the file name as a place to "
+            "look",
+            "Harness, two tools and a loop: 'Python 3.12, and the execute "
+            "job's matrix runs 9 notebooks ... Source: "
+            ".github/workflows/notebooks.yml'",
+            "Same model, same effort, three times; only the third answer can "
+            "be checked by opening the file",
+        ]),
+        kicker="Notebook 01, setup and section 3",
+        note=RUN_CAP + " in wording and route. Model facts from "
+             "client.models.retrieve; the expected answer is parsed from the "
+             "workflow file by the notebook itself, not typed by hand.",
+    )
+    _panel_font(s, 12)
+    notes(s, "Three things to point at in the setup cell: the key never "
+             "appears in an output, the client is created once, and the "
+             "model facts come from the API, not from memory. The question is "
+             "chosen so that no model can know it and one file in this "
+             "repository settles it. Read the three answers aloud. The first "
+             "two are honest about not knowing, which is good behaviour, but "
+             "they contain no checkable fact. The third gives the version, "
+             "the count and the path. Class question: the first two answers "
+             "both mention notebooks.yml; does that mean the model knew the "
+             "file, or guessed a conventional name?")
+
+    # 15. The forty-line loop
     s = ds.table_slide(
         prs,
-        "One question, three answers: only the harness gets the facts and "
-        "shows its source",
-        ["Approach", "What we send", "What comes back", "Verdict"],
+        "The forty-line loop: messages in, tool_use out, tool_result back, "
+        "until the model stops asking",
+        ["The line, from run_agent in notebook 01", "In plain words"],
         [
-            ["Bare model", "The question, nothing else",
-             "'Anthropic released the Model Context Protocol in 2023 and "
-             "Google adopted it in 2024.'",
-             "Wrong year, wrong company, no source. 1 turn, ~26 tokens"],
-            ["Prompt-engineered",
-             "The question plus 'If you are not sure, say so'",
-             "'I am not certain. From memory: ...' then the same wrong facts",
-             "Hedges, still wrong, no source. 1 turn, ~39 tokens"],
-            ["Harness",
-             "The question, three tools, a loop with stop conditions",
-             "'Anthropic open-sourced the Model Context Protocol on 25 "
-             "November 2024 ... On 26 March 2025 OpenAI announced support for "
-             "MCP in its Agents SDK ... [source: model-context-protocol]'",
-             "Both parts correct, cited. 4 model calls, 3 tool calls, "
-             "~1,980 tokens"],
+            ['messages = [{"role": "user", "content": question}]',
+             "The context starts with the task; everything the model sees "
+             "is in this list"],
+            ["for turn in range(1, max_turns + 1):",
+             "Stop condition 1: a ceiling on model calls, so an agent never "
+             "runs forever"],
+            ['response = client.messages.create(model=model, max_tokens=2000, '
+             'system=system, tools=tools, messages=messages, '
+             'output_config={"effort": effort})',
+             "One real API call; tools is the JSON list of names, "
+             "descriptions and input schemas"],
+            ['messages.append({"role": "assistant", "content": '
+             'response.content})',
+             "Replay the whole reply verbatim: thinking, text and tool_use "
+             "blocks"],
+            ['if response.stop_reason != "tool_use": break',
+             "Stop condition 2: end_turn means answered; max_tokens and "
+             "refusal stop the loop too"],
+            ['for block in response.content: if block.type == "tool_use": '
+             'output = functions[block.name](**block.input)',
+             "Your code runs the function the model asked for by name, with "
+             "its JSON arguments"],
+            ['{"type": "tool_result", "tool_use_id": block.id, "content": '
+             'output, "is_error": True}  # is_error only on failure',
+             "Each result answers one request by id; a failure goes back as "
+             "an error the model can read, not a crash"],
+            ['messages.append({"role": "user", "content": results})',
+             "All results of one turn travel in one user message; then the "
+             "loop goes round again"],
         ],
-        kicker="Notebook 01, sections 1-3",
-        note="The question: 'When did Anthropic open-source the Model Context "
-             "Protocol, and which company adopted it in March 2025?' Same "
-             "ScriptedModel in all three runs.",
-        col_widths=[1.1, 1.9, 3.0, 2.2],
+        kicker="Notebook 01, section 3.3",
+        note="How to read it: left, the lines of run_agent (about forty with "
+             "printing and bookkeeping, which are left out here); right, what "
+             "each line does. The loop printed every tool_use and tool_result "
+             "as it ran.",
+        col_widths=[3.1, 2.5],
     )
-    notes(s, "Run the three cells live if you can. The same model answers "
-             "all three times; the only thing that changes is what surrounds "
-             "it. Better words do not add facts the model does not have - the "
-             "prompt-engineered version is more polite and equally wrong. The "
-             "harness adds a library, a way to search it, and a check before "
-             "answering. Class question: what would you have to add to the "
-             "prompt to make the bare model right, and would that scale to "
-             "the next question?")
+    _table_font(s, 11.5)
+    _mono_first_column(s, size=9.5)
+    notes(s, "Walk the eight lines in order and name the four shapes the "
+             "model and the harness exchange: the messages list, the tools "
+             "parameter, the tool_use block the model returns, and the "
+             "tool_result block you send back. Two stop conditions, both in "
+             "your code: the ceiling on turns and the stop reason. Everything "
+             "else in a production harness, permissions, budgets, traces, "
+             "sub-agents, is added around these lines, never instead of them. "
+             "Class question: which line would you change first to add a "
+             "token budget, and which one to refuse a dangerous tool?")
 
-    # 15. The three tools
-    s = ds.table_slide(
-        prs,
-        "The harness could call three tools - each one a plain Python "
-        "function with a docstring",
-        ["Tool", "What its description tells the model", "What it returns",
-         "Step in the trace"],
-        [
-            ["search_docs(query, k=3)",
-             "Search the course library for documents about a topic; a few "
-             "key terms, no full sentences",
-             "The best matches as JSON: id, title, score, snippet",
-             "1 - finds model-context-protocol"],
-            ["read_doc(doc_id)",
-             "Read one document in full, by the id search_docs returned",
-             "The document text", "2 - reads the full text"],
-            ["check_citation(answer, question)",
-             "Check that the draft answer's [source: id] tag names a document "
-             "that supports it",
-             "OK, or PROBLEM with a reason", "3 - returns OK"],
-        ],
-        kicker="Notebook 01, section 3",
-        note="In plain words: a tool is a function the model asks for by name "
-             "with JSON arguments; the harness runs it and pastes the result "
-             "back. Tool design is Session 2.",
-        col_widths=[1.9, 2.7, 2.2, 1.6],
-    )
-    _mono_first_column(s, size=11)
-    notes(s, "Point at the docstrings in the notebook: the first paragraph "
-             "becomes the description the model reads, and each 'argument: "
-             "explanation' line becomes the schema of that argument. Nothing "
-             "is hidden. Class question: what happens if search_docs's "
-             "description just said 'Searches'?")
-
-    # 16. The trace
+    # 16. What the loop printed (the trace of the recorded run)
     s = ds.image_slide(
         prs,
-        "The trace shows the loop working: search, read, check, then answer",
+        "What the loop printed: two listings, one read, then the answer, in "
+        "3 model calls",
         f"{FIGS}/s1_trace.png",
-        kicker="Notebook 01, section 4",
+        kicker="Notebook 01, section 3.3, recorded run",
         bullets=[
-            "How to read it: top lane = model calls, bottom lane = tool calls, "
-            "left to right in time",
-            "Call 1 asks for search_docs; the result names the document "
-            "model-context-protocol",
-            "Call 2 asks for read_doc; call 3 asks check_citation, which "
-            "returns OK",
-            "Call 4 has no tool call, so the loop stops and the answer carries "
-            "its source",
-            "In plain words: a trace is the record of every step - messages, "
-            "tool calls, tokens, time",
-            "result.trace.show() prints exactly this list",
+            "How to read it: top lane = model calls, bottom lane = tool "
+            "calls, left to right in time",
+            "Call 1 asks for two listings at once; the loop runs both and "
+            "returns both in one message",
+            "Call 2 asks to read notebooks.yml; 2,809 characters come back "
+            "as one tool_result",
+            "Call 3 has no tool_use block: stop_reason end_turn, the loop "
+            "stops. 3 model calls, 3 tool calls",
+            "Input tokens grow call by call: 702, then 1,052, then 2,359. "
+            "Each call carries all of it",
+            "In plain words: the model never got smarter; it was given a "
+            "way to look and a loop that kept asking",
         ],
-        caption="Steps and counts from notebook 01 (4 model calls, 3 tool "
-                "calls, ~1,980 estimated tokens). The estimate counts "
-                "characters; a real API reports exact tokens.",
+        caption=RUN_CAP + " in route and tokens. Total 4,113 input and 350 "
+                "output tokens, 0.0293 USD.",
     )
-    notes(s, "This picture is what every harness produces if you ask it to. "
-             "Read it as a story: the model did not know the date, so it "
-             "searched; it found a document, so it read it; it drafted an "
-             "answer and had it checked; the check passed, so it answered. The "
-             "trace is also where debugging happens in Session 3. Class "
-             "question: where in this trace would a wrong answer have been "
-             "caught?")
+    notes(s, "Read it as a story. The model cannot know where the workflow "
+             "file is, so it lists the root and the workflows folder in one "
+             "turn; the loop runs both tools and sends both results back "
+             "together. It then reads the one file that matters and answers "
+             "with the fact and the path. Point at the input tokens: 702, "
+             "1,052, 2,359. Every call re-sends the whole conversation, "
+             "including the 2,809-character file, which is where the cost of "
+             "a harness goes and the subject of Session 2. Class question: "
+             "what would the third call have cost if the README, at almost "
+             "17,000 characters, had been read instead of the workflow file?")
 
-    # 17. Tokens per approach
+    # 17. Three ways side by side (the notebook's table)
+    s = ds.table_slide(
+        prs,
+        "Three ways side by side: only the harness gives the fact, and it "
+        "pays for it in input tokens",
+        ["Approach", "Model calls", "Tool calls", "Input tokens",
+         "Output tokens", "Cost (USD)", "Gives the fact", "Names the file"],
+        [
+            ["Bare prompt", "1", "0", "39", "549", "0.0139", "No", "Yes"],
+            ["Careful prompt", "1", "0", "115", "481", "0.0126", "No", "Yes"],
+            ["Harness: two tools, a loop", "3", "3", "4,113", "350", "0.0293",
+             "Yes", "Yes"],
+        ],
+        kicker="Notebook 01, section 3.4",
+        note=RUN_CAP + ". 'Gives the fact': the answer holds 3.12 and 9, "
+             "parsed from the workflow file by the notebook. 'Names the "
+             "file': it mentions notebooks.yml. All three name it; only the "
+             "harness read it.",
+        col_widths=[2.1, 1.0, 0.9, 1.1, 1.2, 1.0, 1.2, 1.2],
+    )
+    notes(s, "This is the notebook's own table, checked mechanically: the "
+             "checker parses notebooks.yml for the Python version and the "
+             "matrix size, so the notebook cannot drift from the repository. "
+             "The column that matters is 'gives the fact'. 'Names the file' "
+             "is weaker evidence: the two prompt-only answers offer "
+             "notebooks.yml as a typical name to go and look for, the harness "
+             "cites it as the file it read. Class question: which column "
+             "would you add to catch an answer that names the right file but "
+             "quotes the wrong version?")
+
+    # 18. Tokens per approach
     s = ds.image_slide(
         prs,
-        "The right answer cost about 76 times the tokens of the wrong one",
+        "The fact cost 4,113 input tokens; the two prompts cost 39 and 115 "
+        "and gave none",
         f"{FIGS}/s1_tokens.png",
-        kicker="Notebook 01, section 4",
+        kicker="Notebook 01, section 3.4",
         bullets=[
-            "How to read it: bar length = estimated tokens for the whole run",
-            "Bare prompt ~26 tokens, prompt-engineered ~39: one call each, "
-            "both wrong",
-            "Harness: four calls plus three tool results, ~1,980 tokens, "
-            "right on both parts and cited",
-            "The tool results are most of the cost: the full document enters "
-            "the context",
-            "In plain words: a harness trades tokens for facts and checks - "
-            "measure the trade",
-            "Session 2 shows how to keep that bill down: token-efficient "
-            "tools and compaction",
+            "How to read it: bar length = input tokens one approach sent, "
+            "all its calls added up",
+            "Bare prompt 39, careful prompt 115: one call each, almost no "
+            "context, no checkable fact",
+            "Harness 4,113 over 3 calls: tool descriptions plus every tool "
+            "result so far, on every call",
+            "Output went the other way: 549 and 481 tokens of hedging "
+            "against 350 tokens of answer",
+            "Cost: 0.0139 and 0.0126 USD without the fact, 0.0293 USD with "
+            "the fact and the file",
+            "In plain words: tokens are the currency of harness "
+            "engineering; spend them where they buy facts",
         ],
-        caption="Estimated tokens from notebook 01 (character-based estimate, "
-                "deterministic ScriptedModel). Anthropic's research system ran "
-                "at ~15x a chat's tokens (Jun 2025).",
+        caption=RUN_CAP + ". Prices from the Claude API reference: 5.00 USD "
+                "per million input tokens, 25.00 per million output tokens.",
     )
     notes(s, "Nothing is free. Every tool result is pasted into the context "
-             "and the model reads it again on the next call. That is why "
-             "Session 2 spends time on token-efficient tools and on "
-             "compaction. Anthropic reported that its multi-agent research "
-             "system used about 15 times the tokens of a chat, and accepted "
-             "the bill because the task was worth it. Class question: for "
-             "which questions would you refuse to pay 76x?")
+             "and the model reads it again on the next call. Note the "
+             "surprise in the output column: the two prompt-only answers "
+             "wrote more, because they spent their output explaining what "
+             "they would need; the harness wrote less, because it had the "
+             "fact. Session 2 is about keeping the input bill down: context "
+             "budgets, compaction, notes outside the window. Class question: "
+             "for which questions would you refuse to pay 0.03 USD, and for "
+             "which would you happily pay 3 USD?")
 
-    # 18. The smallest harness
+    # 19. The SDK ships the loop
+    s = ds.two_col_slide(
+        prs,
+        "The SDK ships the loop: beta_tool and tool_runner do in ten lines "
+        "what you wrote in forty",
+        ("Ten lines on the SDK", [
+            "beta_tool(list_files), beta_tool(read_file): the JSON "
+            "description is generated from the signature and the docstring",
+            "Same name, description and schema as the hand-written dicts, "
+            "plus a title per argument and additionalProperties: false",
+            "client.beta.messages.tool_runner(model, max_tokens, system, "
+            "tools, messages, max_iterations=8)",
+            "One iteration per model call; generate_tool_call_response() "
+            "runs the requested tools and returns the tool_result message",
+            "Beta in the Python SDK, hence client.beta; the right default "
+            "for a small agent",
+        ]),
+        ("What it produced in the recorded run", [
+            "The same route as your loop: list the root and "
+            ".github/workflows, read notebooks.yml, answer",
+            "3 model calls, 4,251 input tokens, 358 output tokens, "
+            "0.0302 USD (your loop: 4,113 and 350, 0.0293 USD)",
+            "The same answer: Python 3.12, 9 notebooks, source notebooks.yml; "
+            "gives the fact = True for both loops",
+            "The same message shape: a user question, then assistant turns "
+            "with tool_use blocks and user turns of tool_result blocks",
+            "In plain words: the runner saves the typing; it decides nothing "
+            "about what surrounds the loop. That is the harness",
+        ]),
+        kicker="Notebook 01, section 4",
+        note=RUN_CAP + ". The runner sent a conversation of the same shape "
+             "and size as the hand-written loop; what it does not decide is "
+             "which tools to offer, what to refuse, when to stop, what to "
+             "measure, how to test.",
+    )
+    _panel_font(s, 12)
+    notes(s, "Show the generated schema next to the hand-written one: the "
+             "decorator kept the docstring, turned the type hint into the "
+             "schema and added additionalProperties false. Then the runner: "
+             "one for loop, one call to generate_tool_call_response per "
+             "iteration, and the same three calls as before. This is the "
+             "right default for a small agent, and it is also the point "
+             "where the harness starts: tools, refusals, stop conditions, "
+             "measurement and tests are yours to add. Session 3 builds them "
+             "as a small package with a trace, a budget, hooks and an eval "
+             "suite. Class question: name one thing the runner cannot decide "
+             "for you.")
+
+    # 20. The eight pieces, mapped to where they live in the module
     s = ds.table_slide(
         prs,
-        "The smallest harness fits in 15 lines: a loop, a model call, a tool "
-        "call, a stop",
-        ["Pseudo-code", "In plain words"],
+        "The eight pieces and where each one lives in this module: SDK, "
+        "harness package, Claude Code, CI",
+        ["Piece", "Anthropic SDK (Sessions 1-2)",
+         "harness package (Sessions 3-4)", "Claude Code labs (Sessions 2, 4)",
+         "CI (Session 3)"],
         [
-            ["messages = [user(question)]", "Start the context with the task"],
-            ["for turn in range(max_turns):",
-             "Stop condition 1: never loop forever"],
-            ["    reply = model.complete(system, messages, tool_schemas)",
-             "Context in, next message out - the whole model contract"],
-            ["    if not reply.tool_calls: return reply.text",
-             "Stop condition 2: no tool asked for means done"],
-            ["    for call in reply.tool_calls:",
-             "The model may ask for several tools in one turn"],
-            ["        if not permitted(call): result = 'Denied: ...'",
-             "A guardrail outside the model (Session 3)"],
-            ["        else: result = tools.run(call.name, call.args)",
-             "The harness runs the function and keeps the text"],
-            ["        messages.append(tool_result(call, result))",
-             "Paste the result back so the next call sees it"],
+            ["1 Model", "messages.create(model=...), models.retrieve; "
+             "choose by capability, cost, latency", "MAIN_MODEL opus-5, "
+             "WORKER_MODEL sonnet-5", "-", "-"],
+            ["2 Context", "system, messages, usage.input_tokens; "
+             "count_tokens, compaction, notes", "max_input_tokens budget "
+             "stop", "CLAUDE.md in the project", "-"],
+            ["3 Tools", "raw tool dicts, tool_use, tool_result, beta_tool",
+             "@tool(risk=...), ToolRegistry", "MCP servers: claude mcp add",
+             "-"],
+            ["4 Skills", "a load_skill tool; SKILL.md measured on the real "
+             "tokenizer", "-", ".claude/skills/<name>/SKILL.md", "-"],
+            ["5 The loop", "run_agent, tool_runner", "Agent.run, "
+             "stopped_because", "the CLI's own loop", "-"],
+            ["6 Guardrails", "the .env refusal inside read_file",
+             "Hooks.before_tool, deny_risk", "settings.json hooks, "
+             "permission modes", "unit job: pytest on the path guard"],
+            ["7 Orchestration", "-", "five workflow patterns; delegate, "
+             "TaskBoard", ".claude/agents/*.md, agent teams", "-"],
+            ["8 Evals + observability", "usage, the cost table, the ledger",
+             "Trace, evals/cases.yaml, run_evals", "/cost",
+             "evals job, only with the secret: results.json"],
         ],
-        kicker="Notebook 01, section 3",
-        note="How to read it: left, the loop notebook 01 writes inline; "
-             "right, what each line does. Anthropic, Claude Agent SDK, Sep "
-             "2025: gather context, act, verify, repeat.",
-        col_widths=[3.0, 2.6],
+        kicker="Notebook 01, section 5",
+        note="How to read it: one row per piece, in the canon order; each "
+             "cell names the real artefact you will touch; a dash means none "
+             "of its own there.",
+        col_widths=[1.4, 2.6, 2.3, 2.3, 1.7],
     )
-    _mono_first_column(s, size=11.5)
-    notes(s, "Have the students count the lines: eight shown here, fifteen "
-             "with the Message class and the tool registry. Everything else "
-             "in a production harness - permissions, compaction, traces, "
-             "sub-agents - is added around these lines, never instead of "
-             "them. Class question: which line would you change first to "
-             "add a token budget?")
+    _table_font(s, 10, header_size=11.5)
+    notes(s, "You have already met four pieces today on the raw SDK: the "
+             "model behind one call, the context as a messages list, tools "
+             "as JSON, and the loop. Read the other columns as the map of "
+             "the module: Session 3 turns the loop into a package with hooks, "
+             "a trace and evals; the labs show the same pieces inside Claude "
+             "Code as files you can open; CI runs the unit tests always and "
+             "the evals when the key is present. Class question: which of "
+             "the eight would you build first if you had one afternoon, and "
+             "which would you borrow?")
 
-    # 19. Big number: 9.5
+    # 21. Big number: 9.5
     s = ds.big_number_slide(
         prs,
         "One number to keep: the same model, two harnesses, 9.5 points apart",
         "9.5",
         "points of harness-only variation on SWE-bench Pro for Claude Opus "
         "4.5: 45.9% under SEAL, 55.4% under Claude Code",
-        foot="arXiv 2605.23950, May 2026; arXiv 2609.11987, Sep 2026. Our "
-             "notebook shows the same effect at toy scale: one ScriptedModel, "
-             "a wrong answer without a harness and a cited one with it.",
+        foot="arXiv 2605.23950, May 2026; arXiv 2609.11987, Sep 2026. "
+             "Notebook 01 shows the same effect at small scale: the same "
+             "claude-opus-5 gave no checkable fact without a harness and the "
+             "fact with its file inside one (recorded run, 30 Sep 2026).",
         kicker="Takeaway",
     )
     notes(s, "Close the loop with the evidence slide. At benchmark scale the "
              "harness moves the score by 9.5 points; at notebook scale it "
-             "moves the answer from wrong to right and cited. Same lesson, "
-             "two scales. Class question: if you could only change the model "
-             "or only change the harness for your project, which would you "
-             "pick and why?")
+             "moves the answer from 'I cannot know' to the fact and the file. "
+             "Same lesson, two scales. Class question: if you could only "
+             "change the model or only change the harness for your project, "
+             "which would you pick and why?")
 
-    # 20. Close
+    # 22. Close
     s = ds.close_slide(
         prs,
         "You now know what a harness is - next session you build its pieces",
@@ -892,19 +1068,31 @@ def slides():
             "orchestration, evals and traces",
             "Workflows when the path is known; agents when the steps depend on "
             "the last result",
-            "Notebook 01: the same question three ways; only the harness "
-            "answers right, with a source, at ~76x the tokens",
-            "Practice now, zero setup: notebook 01 in Colab, Runtime > Run "
-            "all, then the exercises before the solutions",
+            "Notebook 01: one question three ways on the raw SDK; only the "
+            "forty-line loop gives the fact and the file, at 4,113 input "
+            "tokens against 39",
+            "The SDK ships the loop (tool_runner); the harness is everything "
+            "around it, and Session 3 builds it as a package",
         ],
         course=course,
     )
     notes(s, "Recap the seven lines, then point at the exercises at the end "
-             "of notebook 01: they extend the 15-line loop. Next session opens "
-             "the four pieces the model sees: models, context, tools and "
-             "skills. Class question to close: which of the eight pieces did "
-             "notebook 01's harness NOT have, and what could go wrong because "
-             "of it?")
+             "of notebook 01, all with executed solutions from the same "
+             "recorded run: a third tool count_lines (the model called it "
+             "straight away and got 49 lines in 2 model calls); max_turns=1 "
+             "(the model asked for 2 listings, the tools ran, and the only "
+             "answer was 'I'll explore the repository structure first.', "
+             "stopped because max_turns); the trap question 'How many "
+             "students took this course?' (3 model calls, 2 tool calls, "
+             "0.0562 USD, the most expensive run in the notebook, and a plain "
+             "'the repository doesn't contain that'); and claude-sonnet-5 on "
+             "the same harness (3 model calls, 2 tool calls, 3,783 input "
+             "tokens, 0.0106 USD against 0.0293, both give the fact). The "
+             "whole notebook billed 17 model calls, 24,077 input tokens, "
+             "2,704 output tokens and 0.1720 USD. Next session opens the four "
+             "pieces the model sees: models, context, tools and skills. Class "
+             "question to close: which of the eight pieces did notebook 01's "
+             "loop NOT have, and what could go wrong because of it?")
 
     return prs
 

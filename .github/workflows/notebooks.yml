@@ -2,11 +2,14 @@ name: Execute notebooks
 
 # Every notebook is run top to bottom in a clean environment, exactly as a
 # student would. Runs on pull requests that touch notebooks, weekly, and on demand.
+# Module 5 talks to real Claude models, so its notebooks run in a separate job that
+# needs the ANTHROPIC_API_KEY repository secret and skips cleanly without it.
 on:
   pull_request:
     paths:
       - "**/*.ipynb"
       - "M5 - Harness Engineering/harness/**"
+      - "M5 - Harness Engineering/evals/**"
       - "requirements*.txt"
       - "scripts/run_notebooks.sh"
       - ".github/workflows/notebooks.yml"
@@ -35,10 +38,6 @@ jobs:
           - "M3 - ML Architectures and Deployment/01-ml-system-architectures.ipynb"
           - "M3 - ML Architectures and Deployment/02-deploying-models-in-the-cloud.ipynb"
           - "M3 - ML Architectures and Deployment/03-consuming-models-from-applications.ipynb"
-          - "M5 - Harness Engineering/01-from-prompts-to-harnesses.ipynb"
-          - "M5 - Harness Engineering/02-models-context-tools-and-skills.ipynb"
-          - "M5 - Harness Engineering/03-building-a-harness.ipynb"
-          - "M5 - Harness Engineering/04-sub-agents-teams-and-the-discipline.ipynb"
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
@@ -47,3 +46,28 @@ jobs:
           cache: pip
       - run: pip install -r requirements-dev.txt
       - run: scripts/run_notebooks.sh "${{ matrix.notebook }}"
+
+  module-5:
+    name: Module 5 on real Claude models
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements-dev.txt
+      - name: Execute the Module 5 notebooks
+        if: env.ANTHROPIC_API_KEY != ''
+        run: |
+          for nb in "01-from-prompts-to-harnesses" "02-models-context-tools-and-skills" \
+                    "03-building-a-harness" "04-sub-agents-teams-and-the-discipline"; do
+            scripts/run_notebooks.sh "M5 - Harness Engineering/$nb.ipynb"
+          done
+      - name: Skipped (no ANTHROPIC_API_KEY secret)
+        if: env.ANTHROPIC_API_KEY == ''
+        run: |
+          echo "Module 5 notebooks were not executed: add the ANTHROPIC_API_KEY repository secret to run them here." >> "$GITHUB_STEP_SUMMARY"

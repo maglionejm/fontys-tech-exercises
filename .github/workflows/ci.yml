@@ -18,7 +18,7 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install "ruff>=0.5"
-      - run: ruff check presentations/src scripts "M5 - Harness Engineering/harness"
+      - run: ruff check presentations/src scripts "M5 - Harness Engineering/harness" "M5 - Harness Engineering/tests"
 
   notebooks:
     name: Notebook format, outputs and secrets

@@ -1,0 +1,72 @@
+name: Harness package
+
+# Unit tests always; the eval suite only when the repository secret
+# ANTHROPIC_API_KEY exists. The secret is read into the job environment and every
+# step of the evals job skips cleanly when it is empty (forks and Dependabot do not
+# receive secrets).
+on:
+  pull_request:
+    paths:
+      - "M5 - Harness Engineering/harness/**"
+      - "M5 - Harness Engineering/evals/**"
+      - "M5 - Harness Engineering/tests/**"
+      - ".github/workflows/harness.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: "M5 - Harness Engineering"
+
+jobs:
+  unit:
+    name: Unit tests (no key)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install anthropic python-dotenv pyyaml pydantic pandas pytest ruff
+      - run: ruff check harness tests
+      - run: python -m pytest tests -q
+
+  evals:
+    name: Eval suite (needs ANTHROPIC_API_KEY)
+    runs-on: ubuntu-latest
+    needs: unit
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install anthropic python-dotenv pyyaml pydantic pandas
+      - name: Run the eval suite (configurations A, B and C)
+        if: env.ANTHROPIC_API_KEY != ''
+        run: python -m harness eval evals/cases.yaml --config all --out results.json
+      - name: Scoreboard to the job summary
+        if: env.ANTHROPIC_API_KEY != ''
+        run: |
+          {
+            echo "### Harness eval scoreboard"
+            echo
+            echo '```'
+            python -m harness show results.json
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload results.json
+        if: env.ANTHROPIC_API_KEY != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: harness-eval-results
+          path: "M5 - Harness Engineering/results.json"
+      - name: Skipped (no ANTHROPIC_API_KEY secret)
+        if: env.ANTHROPIC_API_KEY == ''
+        run: |
+          echo "Eval suite not run: add the ANTHROPIC_API_KEY repository secret to run it here." >> "$GITHUB_STEP_SUMMARY"

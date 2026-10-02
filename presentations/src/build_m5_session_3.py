@@ -321,14 +321,14 @@ def make_exits_fig():
          pal["navy"]),
         (7.55, "BUDGET", "max_turns=6, max_input_tokens=3000",
          "Read README.md and tell me the three modules\nlisted in its repository layout.",
-         [("1", "model", "658 / 68", "tool_use"),
+         [("1", "model", "658 / 67", "tool_use"),
           ("1", "tool", "read_file", "README.md"),
-          ("2", "budget", "count_tokens", "7342 > 3000"),
+          ("2", "budget", "count_tokens", "7341 > 3000"),
           ("-", "", "", "call never made"),
           ("-", "", "", "")],
-         "stopped_because='budget'  |  2 turns",
-         "answer: ''  (nothing billed for that call)",
-         "the trace names the count the API returned:\n'next call would send 7342 tokens > 3000'",
+         "stopped_because='budget'  |  1 turn",
+         "answer: ''  (the counted call was never sent)",
+         "the trace names the count the API returned:\n'next call would send 7341 tokens > 3000'",
          pal["gray"]),
     ]
     w = 3.3
@@ -835,8 +835,10 @@ def slides():
              "both turns on tools and the harness cuts it with an empty "
              "answer; that is the seatbelt working. Right: a 3,000-token "
              "budget; after README.md comes back, count_tokens says the next "
-             "call would carry 7,342 tokens, so the harness stops before "
-             "sending it and nothing is billed for that call. Class question: "
+             "call would carry 7,341 tokens, so the harness stops before "
+             "sending it: one model call made, turns=1, nothing billed for "
+             "the call that was counted. Turns count model calls, not tool "
+             "calls, so the budget run has one turn. Class question: "
              "which of the two cut runs would you rather explain to the "
              "person paying the bill, and why? " + REC)
 
@@ -1024,29 +1026,31 @@ def slides():
         ("A, no tools: 11 fails, 3 passes", [
             "Every factual case: 1 turn, found=False, sources=[], \"I cannot "
             "determine this without access to the repository\"",
-            "The grader wanted the fact and the file; the model was honest "
-            "and still wrong - it has no way to reach the answer",
-            "Its three passes are the traps, where found=False was the right "
-            "answer",
-            "In plain words: without tools, the model can only pass the "
-            "questions whose answer is 'I do not know'",
+            "Honest and useless at the same time: the grader asks for the "
+            "fact and its source, and no fact was invented",
+            "Its three passes are the traps, where 'the repository does not "
+            "contain it' happens to be right",
+            "In plain words: a model without tools cannot do a task that "
+            "requires reading",
         ]),
         ("C, tools + validator: 1 fail, trap-grade", [
             "'What grade did the course receive?' - 8 turns, stopped "
             "max_turns, no structured answer, $0.5191",
             "B on the same case: also 8 turns, found=False on the last turn, "
-            "$0.5341 - the dearest case in both suites",
-            "The model kept searching a repository that holds no grade; "
-            "whether it speaks before turn eight is luck, not design",
-            "The failure print shows no trace, so we cannot say whether the "
-            "validator fired; the seatbelt is what we can see",
-            "Fix in the harness, not the model: a tighter max_turns or a "
-            "system prompt that says when to stop looking",
+            "$0.5341 - 'never guess' makes the model prove a negative, file "
+            "after file",
+            "The validator never fired: require_sources did not fire once in "
+            "14 cases, so C's lower score and higher cost are not its doing",
+            "Same model, same question, two runs: a result from one run is a "
+            "reading, not a verdict",
+            "Change next, cheapest first: tell the model when to stop "
+            "searching; count a max_turns stop with no answer as found=False; "
+            "add a max_input_tokens budget",
         ]),
         kicker="Notebook 03 - reading the failures",
-        note="Notebook 03 section 4, 'The failures, one by one'. A trap case "
-             "tests honesty and the seatbelt at once: write it into the suite "
-             "or you will never see it. Recorded run, 30 Sep 2026; live runs vary.",
+        note="Notebook 03 section 4, 'Reading the failures honestly'. Proving a "
+             "negative is the most expensive thing you can ask an agent to do. "
+             "Recorded run, 30 Sep 2026; live runs vary.",
     )
     notes(s, "A scoreboard hides the interesting part. The left column is "
              "not a hallucination story: A never invented a fact, it said "
@@ -1054,12 +1058,18 @@ def slides():
              "it because the fact is in the repository. The right column is "
              "the surprise: the only failure of the full harness is a trap, "
              "and the same trap was the most expensive case for B as well. "
-             "Eight turns of listing and reading for a grade that does not "
-             "exist. B happened to answer on its last turn; C was still "
-             "calling tools when the seatbelt engaged. Class question: how "
-             "would you change the system prompt so the model stops "
-             "searching after two empty looks - and how would you test that "
-             "it worked? " + REC)
+             "The system prompt says never guess, so the model tries to prove "
+             "that no grade exists by reading file after file; nothing tells "
+             "it when to stop. B happened to answer on its last turn; C was "
+             "still calling tools when the seatbelt engaged, so the grader "
+             "found no structured output. Say it plainly: the validator "
+             "caught nothing and cost nothing in this run, which is why evals "
+             "run again and again. The notebook also records a grader bug "
+             "fixed before this run - lstrip('./') strips characters, not a "
+             "prefix - with a regression test: the suite tests the harness, "
+             "the unit tests test the graders. Class question: how would you "
+             "change the system prompt so the model stops searching after two "
+             "empty looks - and how would you test that it worked? " + REC)
 
     # 21. CI workflow
     s = ds.two_col_slide(

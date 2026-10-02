@@ -25,7 +25,7 @@ pal = ds.mpl_theme()
 COURSE = "Harness Engineering - Module 5"
 FOOTER = "M5 Session 4 - Sub-agents, Teams and the Discipline"
 RUN = ("Recorded run on claude-opus-5 (lead) and claude-sonnet-5 (workers), "
-       "30 Sep 2026; live runs vary.")
+       "2 Oct 2026; live runs vary.")
 LAB = "Observed with Claude Code 2.1.278 on 30 Sep 2026, claude -p from lab/; live runs vary."
 
 
@@ -200,10 +200,10 @@ def make_lead_context_fig():
     (notebook 04, cells 8, 10 and 11: count_tokens on the final messages)."""
     fig, ax = plt.subplots(figsize=(7.6, 4.8))
     labels = ["Lead: its own final context\n(2 model calls; holds 3 reports)",
-              "Workers: final contexts summed\n(2,230 + 1,137 + 1,799; never in the lead)",
+              "Workers: final contexts summed\n(2,269 + 1,395 + 1,895; never in the lead)",
               "Solo: its own final context\n(3 model calls; holds 3 files)"]
-    vals = [1527, 5166, 3985]
-    texts = ["1,527 tokens", "5,166 tokens", "3,985 tokens"]
+    vals = [1938, 5559, 3962]
+    texts = ["1,938 tokens", "5,559 tokens", "3,962 tokens"]
     colors = [pal["navy"], pal["sky"], pal["navy"]]
     bars = ax.barh(labels, vals, color=colors, height=0.55)
     ax.invert_yaxis()
@@ -215,7 +215,7 @@ def make_lead_context_fig():
     ax.set_title("Where the reading happened: one compound question, three files")
     ax.tick_params(axis="y", labelsize=10)
     ax.text(7300, 0, "Both architectures answered 3 of 3 parts.\n"
-            "Lead + workers 0.0444 USD in 25.8 s;\nsolo 0.0402 USD in 7.5 s.",
+            "Lead + workers 0.0519 USD in 34.1 s;\nsolo 0.0397 USD in 7.4 s.",
             ha="right", va="center", color=pal["gray"], fontsize=9,
             style="italic", linespacing=1.3)
     ax.set_ylim(2.6, -0.6)
@@ -234,9 +234,9 @@ def make_team_board_fig():
     tasks = [("#1", "teammate-1", "Which licence does the repo use?"),
              ("#2", "teammate-2", "Copyright holder and year"),
              ("#3", "teammate-3", "Titanic passengers and survivors"),
-             ("#4", "teammate-2", "Secret scanner in the CI workflow"),
-             ("#5", "teammate-1", "random_state in CONTRIBUTING"),
-             ("#6", "teammate-3", "Notebook matrix; the Module 5 job")]
+             ("#4", "teammate-3", "Secret scanner in the CI workflow"),
+             ("#5", "teammate-2", "random_state in CONTRIBUTING"),
+             ("#6", "teammate-1", "Notebook matrix; the Module 5 job")]
     for i, (tid, owner, desc) in enumerate(tasks):
         y = 4.8 - i * 0.58
         ax.add_patch(FancyBboxPatch((0.15, y - 0.24), 6.0, 0.48,
@@ -254,8 +254,8 @@ def make_team_board_fig():
                 fontweight="bold")
         ax.text(3.0, y, desc, va="center", color=pal["ink"], fontsize=7.9)
     log = ["board log (t1 = teammate-1):  t1 claims #1 | t2 claims #2 | t3 claims #3 |",
-           "t2 done #2 | t2 claims #4 | t1 done #1 | t1 claims #5 | t3 done #3 |",
-           "t3 claims #6 | t1 done #5 | t2 done #4 | t3 done #6.  Nobody assigned; the board did."]
+           "t3 done #3 | t3 claims #4 | t2 done #2 | t2 claims #5 | t1 done #1 |",
+           "t1 claims #6 | t3 done #4 | t1 done #6 | t2 done #5.  Nobody assigned; the board did."]
     for i, line in enumerate(log):
         ax.text(0.2, 1.5 - i * 0.26, line, va="center", color=pal["gray"], fontsize=6.9)
     # right panel: what the team saved
@@ -265,26 +265,26 @@ def make_team_board_fig():
                                 facecolor=pal["blue"], edgecolor=pal["blue"]))
     ax.text(6.6, 5.575, "WHAT THE TEAM SAVED", va="center",
             color="white", fontweight="bold", fontsize=8.6)
-    scale = 2.3 / 19.9
+    scale = 2.3 / 28.3
     ax.text(6.6, 4.95, "3 teammates in parallel (wall-clock)", va="center",
             color=pal["ink"], fontsize=7.8)
-    ax.add_patch(FancyBboxPatch((6.6, 4.5), 7.5 * scale, 0.3,
+    ax.add_patch(FancyBboxPatch((6.6, 4.5), 9.5 * scale, 0.3,
                                 boxstyle="square,pad=0", facecolor=pal["blue"],
                                 edgecolor=pal["blue"]))
-    ax.text(6.6 + 7.5 * scale + 0.1, 4.65, "7.5 s", va="center",
+    ax.text(6.6 + 9.5 * scale + 0.1, 4.65, "9.5 s", va="center",
             color=pal["navy"], fontsize=9.5, fontweight="bold")
     ax.text(6.6, 4.05, "the same six runs one after another", va="center",
             color=pal["ink"], fontsize=7.8)
-    ax.add_patch(FancyBboxPatch((6.6, 3.6), 19.9 * scale, 0.3,
+    ax.add_patch(FancyBboxPatch((6.6, 3.6), 28.3 * scale, 0.3,
                                 boxstyle="square,pad=0", facecolor=pal["sky"],
                                 edgecolor=pal["sky"]))
-    ax.text(6.6 + 19.9 * scale + 0.1, 3.75, "19.9 s", va="center",
+    ax.text(6.6 + 28.3 * scale + 0.1, 3.75, "28.3 s", va="center",
             color=pal["navy"], fontsize=9.5, fontweight="bold")
     lines = [("17 model calls, 10 tool calls", "normal"),
-             ("24,611 input tokens, 0.0706 USD", "bold"),
+             ("24,967 input tokens, 0.0722 USD", "bold"),
              ("each teammate took 2 tasks", "normal"),
              ("exercise 2, four teammates:", "normal"),
-             ("7.9 s and 0.0715 USD", "bold")]
+             ("13.1 s and 0.0707 USD", "bold")]
     for i, (line, weight) in enumerate(lines):
         ax.text(6.6, 3.0 - i * 0.4, line, va="center", color=pal["ink"],
                 fontsize=7.8, fontweight=weight)
@@ -340,7 +340,7 @@ def make_handoff_fig():
     rows2 = [("user: what share of passengers survived?", pal["panel"], pal["ink"]),
              ("assistant: calculate('342/891*100')", pal["panel"], pal["ink"]),
              ("tool: 38.38383838383838", pal["panel"], pal["ink"]),
-             ("assistant: About 38.4% of the passengers\nsurvived (342/891).", pal["blue"], "white")]
+             ("assistant: About 38.4% of passengers\nsurvived.", pal["blue"], "white")]
     for i, (r, fc, tc) in enumerate(rows2):
         y = 4.0 - i * 0.55
         h = 0.5 if i == 3 else 0.4
@@ -351,11 +351,11 @@ def make_handoff_fig():
         ax.text(6.4, y, r, va="center", color=tc, fontsize=7.2,
                 fontweight="bold" if fc == pal["blue"] else "normal",
                 linespacing=1.2)
-    ax.text(8.0, 1.62, "first model call: 7,539 input tokens\nfresh "
-            "calculator, same sum: 522\ninherited: 7,017 tokens",
+    ax.text(8.0, 1.62, "first model call: 7,487 input tokens\nfresh "
+            "calculator, same sum: 522\ninherited: 6,965 tokens",
             ha="center", va="center", color=pal["navy"], fontsize=7.4,
             linespacing=1.3, fontweight="bold")
-    ax.text(5.0, 0.6, "The handoff (research, then calculator) cost 0.0514 USD "
+    ax.text(5.0, 0.6, "The handoff (research, then calculator) cost 0.0509 USD "
             "for one answer; the fresh calculator 0.0029 USD.", ha="center",
             va="center", color=pal["gray"], fontsize=8.2)
     ax.set_xlim(0, 10)
@@ -372,31 +372,31 @@ def make_runaway_fig():
     text box."""
     fig, ax = plt.subplots(figsize=(7.6, 4.8))
     calls = [1, 2, 3, 4, 5]
-    tokens = [738, 991, 2197, 3587, 4112]
+    tokens = [765, 1001, 2180, 3414, 3672]
     ax.bar(calls, tokens, color=pal["blue"], width=0.7)
     for c, v in zip(calls, tokens):
-        ax.text(c, v + 350, f"{v:,}", ha="center", color=pal["ink"], fontsize=9)
-    ax.bar([6], [17810], width=0.7, facecolor="white", edgecolor=pal["navy"],
+        ax.text(c, v + 320, f"{v:,}", ha="center", color=pal["ink"], fontsize=9)
+    ax.bar([6], [16136], width=0.7, facecolor="white", edgecolor=pal["navy"],
            hatch="///", lw=1.4)
-    ax.text(6, 17810 + 350, "17,810", ha="center", color=pal["navy"],
+    ax.text(6, 16136 + 320, "16,136", ha="center", color=pal["navy"],
             fontsize=9.5, fontweight="bold")
-    ax.text(5.55, 15800, "never sent:\ncount_tokens\nmeasured it first", ha="right",
+    ax.text(5.55, 14500, "never sent:\ncount_tokens\nmeasured it first", ha="right",
             va="center", color=pal["navy"], fontsize=8.6, style="italic",
             linespacing=1.3)
     ax.axhline(12000, color=pal["navy"], lw=1.6, ls="--")
-    ax.text(0.65, 12350, "max_input_tokens = 12,000  ->  stopped_because = 'budget'",
+    ax.text(0.65, 12300, "max_input_tokens = 12,000  ->  stopped_because = 'budget'",
             color=pal["navy"], fontsize=9.5, fontweight="bold", va="bottom")
-    ax.text(0.65, 20500, "The other seatbelt, max_turns=4, on the same task:\n"
-            "stopped after 4 model calls and 23 tool calls, 0.0279 USD.\n"
+    ax.text(0.65, 19200, "The other seatbelt, max_turns=4, on the same task:\n"
+            "stopped after 4 model calls and 21 tool calls, 0.0272 USD.\n"
             "Neither run produced a summary.",
             color=pal["gray"], fontsize=8.8, va="top", linespacing=1.3)
     ax.annotate("call 5 asked for a whole batch of files at once",
-                xy=(5.35, 4112), xytext=(2.9, 7600), color=pal["ink"], fontsize=8.8,
+                xy=(5.35, 3672), xytext=(2.9, 7000), color=pal["ink"], fontsize=8.8,
                 arrowprops=dict(arrowstyle="-|>", color=pal["gray"], lw=1.2))
     ax.set_xticks(calls + [6])
     ax.set_xticklabels([f"call {c}" for c in calls] + ["call 6"])
     ax.set_xlim(0.4, 6.7)
-    ax.set_ylim(0, 21500)
+    ax.set_ylim(0, 20000)
     ax.set_xlabel("Model call ('Read every file in this repository and summarise each one')")
     ax.set_ylabel("Input tokens of that call")
     ax.set_title("An open-ended task: the context grows every call until the budget stops it")
@@ -693,8 +693,8 @@ def slides():
             "A synthesizer agent writes the final answer",
             "You see and test every step; the structure cannot drift",
             "Use when the shape of the work is known: split, solve, merge",
-            "Notebook 04: 4 sub-questions, workers in parallel in 6.0 s, "
-            "0.0415 USD in all",
+            "Notebook 04: 3 sub-questions, workers in parallel in 4.2 s, "
+            "0.0311 USD in all",
         ]),
         ("As a model decision: a delegate tool", [
             "The lead has one tool, delegate(task), that starts a fresh "
@@ -704,7 +704,7 @@ def slides():
             "Harder to test; needs max_turns and a token budget",
             "Use when the sub-tasks only appear as you go",
             "Notebook 04: 3 sub-questions, delegations run one after "
-            "another, 0.0444 USD in all",
+            "another, 0.0519 USD in all",
         ]),
         kicker="Orchestration",
         note="Both run in notebook 04 on the same compound question about the "
@@ -718,11 +718,14 @@ def slides():
              "is a list, the loop is a for-loop, the merge is a call. On the "
              "right, orchestration is a tool the lead may call, and the "
              "structure lives in the model's head. Notebook 04 runs both on "
-             "the same three-part question; the totals came out close "
-             "(0.0415 against 0.0444 USD) because the reading is the same "
-             "and only the coordination differs: two cheap planner and "
-             "synthesizer calls against two calls on the expensive lead "
-             "model. Class question: which side would you pick for a nightly "
+             "the same three-part question; both split it into three "
+             "sub-questions, and the orchestrator came out cheaper (0.0311 "
+             "against 0.0519 USD) and faster (10.7 against 21.0 seconds): "
+             "its two coordination calls cost 0.0104 USD on the worker "
+             "model where the lead's two calls on claude-opus-5 cost 0.0278, "
+             "and its workers ran in a thread pool while the lead's "
+             "delegations ran one after another. Class question: which "
+             "side would you pick for a nightly "
              "report that must look the same every day?")
 
     # 9. Failure modes
@@ -754,7 +757,7 @@ def slides():
              "three parts (notebook 04, exercise 1)"],
         ],
         kicker="Failure modes",
-        note="Handoffs and reviewer findings: Marmelab, The State of AI Harness Engineering 2026, Sep 2026. 15x tokens: Anthropic, Jun 2025. Delegation cap: notebook 04 exercise 1, recorded run: 2 workers started, 0 denied, 0.0424 USD.",
+        note="Handoffs and reviewer findings: Marmelab, The State of AI Harness Engineering 2026, Sep 2026. 15x tokens: Anthropic, Jun 2025. Delegation cap: notebook 04 exercise 1, recorded run: 2 workers started, 0 denied, 0.0414 USD.",
         col_widths=[2.2, 4.6, 4.2],
     )
     notes(s, "Every row is a real incident type; the last one is the notebook's "
@@ -762,7 +765,8 @@ def slides():
              "delegation. In the recorded run the hook never had to fire: "
              "told about the cap in its system prompt, the lead planned two "
              "workers, one of them covering two files, and answered all "
-             "three parts for slightly less than the uncapped lead. The two "
+             "three parts for 0.0414 USD against 0.0519 for the uncapped "
+             "lead. The two "
              "survey findings deserve emphasis: chains of more than four "
              "handoffs almost always failed - each handoff loses intent - "
              "and adding a reviewer agent made things worse by eight points, "
@@ -873,7 +877,7 @@ def slides():
              "every answer can be checked by opening the file. The key sits "
              "in the git-ignored .env at the repository root and only "
              "load_client() reads it. The numbers on the next slides are "
-             "from the run recorded on 30 September 2026, which cost 0.4413 "
+             "from the run recorded on 2 October 2026, which cost 0.4313 "
              "USD for the whole notebook; a live run will differ in wording, "
              "in the route the model takes and in cents. Class question: "
              "which of the three shapes do you expect to cost the most "
@@ -882,7 +886,7 @@ def slides():
     # 14. Lead vs solo: where the reading happened
     s = ds.image_slide(
         prs,
-        "Lead: 1,527 tokens of final context; solo agent: 3,985",
+        "Lead: 1,938 tokens of final context; solo agent: 3,962",
         f"{FIGS}/s4_lead_context.png",
         kicker="Notebook 04 - sub-agents",
         bullets=[
@@ -891,11 +895,11 @@ def slides():
             "The lead (opus-5) has no read_file: its only tool is "
             "delegate(task), which starts a fresh worker Agent on sonnet-5",
             "It made 3 delegate calls in one turn and 2 model calls; it "
-            "holds three reports, not three files: 1,527 tokens",
+            "holds three reports, not three files: 1,938 tokens",
             "The solo agent read the same three files itself: 3 model "
-            "calls, 5 tool calls, 3,985 tokens, about 2.5x the lead",
+            "calls, 5 tool calls, 3,962 tokens, about 2x the lead",
             "Plainly: the solo agent was not polluted here. It answered 3 "
-            "of 3 parts, cheaper (0.0402 vs 0.0444 USD) and faster",
+            "of 3 parts, cheaper (0.0397 vs 0.0519 USD) and faster",
             "Isolation pays when the question or the files outgrow one "
             "context; on three facts the strong model coped",
         ],
@@ -909,8 +913,9 @@ def slides():
              "the lead's window. Say the honest part out loud: on this "
              "three-part question the solo agent on opus-5 was not polluted. "
              "It read exactly the three files it needed, answered all three "
-             "parts, and cost less and finished in a third of the time "
-             "because it made no detours. The lesson is 'scale effort to "
+             "parts, and cost less and finished in a fraction of the time "
+             "(7.4 against 34.1 seconds) because it made no detours. The "
+             "lesson is 'scale effort to "
              "the query': the sub-agent design earns its cost when the "
              "question has ten facts or the files are ten times longer, "
              "because then the solo context keeps growing and you cannot "
@@ -921,7 +926,7 @@ def slides():
     # 15. The team board
     s = ds.image_slide(
         prs,
-        "Three teammates cleared six tasks in 7.5 s, not 19.9 s",
+        "Three teammates cleared six tasks in 9.5 s, not 28.3 s",
         f"{FIGS}/s4_team_board.png",
         kicker="Notebook 04 - agent teams",
         bullets=[
@@ -931,10 +936,10 @@ def slides():
             "three teammate threads claim, run a fresh worker, post, repeat",
             "Nobody assigned anything: each teammate took one task, and "
             "whoever finished first took the next; two each in this run",
-            "17 model calls, 10 tool calls, 0.0706 USD including the "
+            "17 model calls, 10 tool calls, 0.0722 USD including the "
             "team lead's briefing on opus-5; the six answers are gradable",
-            "Exercise 2, four teammates: 7.9 s and 0.0715 USD - the same "
-            "within noise, because six tasks still take two rounds",
+            "Exercise 2, four teammates: 13.1 s and 0.0707 USD - no faster "
+            "and the same cost, because six tasks still take two rounds",
             "Claude Code's agent teams do this natively, plus a mailbox "
             "between teammates: see the lab",
         ],
@@ -946,17 +951,18 @@ def slides():
              "next open task, so each ended with two. The right panel is "
              "the only thing the team buys: the clock. The six worker runs "
              "happen either way, so the tokens and the cost are the same; "
-             "parallel work moved 19.9 seconds of work into 7.5. The "
+             "parallel work moved 28.3 seconds of work into 9.5. The "
              "four-teammate exercise makes the point twice: with six tasks "
-             "and four hands you still need two rounds, so nothing is saved "
-             "and the cost is unchanged. Class question: what breaks first "
+             "and four hands you still need two rounds, so there is little "
+             "to save - that run was slower, 13.1 seconds, at the same "
+             "cost. Class question: what breaks first "
              "if two teammates claim the same task at the same time, and "
              "which line of TaskBoard prevents it?")
 
     # 16. The handoff
     s = ds.image_slide(
         prs,
-        "A handoff carries everything: 7,017 inherited tokens",
+        "A handoff carries everything: 6,965 inherited tokens",
         f"{FIGS}/s4_handoff.png",
         kicker="Notebook 04 - handoff",
         bullets=[
@@ -966,9 +972,9 @@ def slides():
             "6 inherited messages, 4 new",
             "The calculator called its tool once (342/891*100): about 38.4% "
             "of the passengers survived",
-            "First model call: 7,539 input tokens; a fresh calculator on the "
-            "same sum: 522. Inherited: 7,017",
-            "0.0514 USD for one answer, 0.0029 fresh. Delegation asks for a "
+            "First model call: 7,487 input tokens; a fresh calculator on the "
+            "same sum: 522. Inherited: 6,965",
+            "0.0509 USD for one answer, 0.0029 fresh. Delegation asks for a "
             "report; a handoff hands over",
             "Marmelab 2026: more than four handoffs almost always failed; "
             "the history goes stale",
@@ -980,7 +986,7 @@ def slides():
              "easiest to overuse. The calculator specialist gets the entire "
              "research conversation and one new instruction; it needs only "
              "the two numbers, but pays for the README the worker read, its "
-             "tool calls and its answer - 7,017 tokens on the first call and "
+             "tool calls and its answer - 6,965 tokens on the first call and "
              "again on the second. That is why the survey found chains of "
              "more than four handoffs almost always fail: the history grows "
              "and the intent blurs. Class question: when is inheriting the "
@@ -999,13 +1005,13 @@ def slides():
             "The task: 'read every file in this repository and summarise "
             "each one'. Nothing staged; the worker just keeps going",
             "Seatbelt 1, max_turns=4: stopped_because = 'max_turns' after "
-            "4 model calls and 23 tool calls, 0.0279 USD",
-            "Seatbelt 2, max_input_tokens=12,000: the calls saw 738, 991, "
-            "2,197, 3,587 and 4,112 tokens as folders were listed",
+            "4 model calls and 21 tool calls, 0.0272 USD",
+            "Seatbelt 2, max_input_tokens=12,000: the calls saw 765, 1,001, "
+            "2,180, 3,414 and 3,672 tokens as folders were listed",
             "Then the worker asked for a whole batch of files; count_tokens "
-            "measured the next call at 17,810 and the loop refused to send it",
-            "stopped_because = 'budget', 37 tool calls, 0.0450 USD, no "
-            "summary. Both runs together: 0.0729 USD for nothing",
+            "measured the next call at 16,136 and the loop refused to send it",
+            "stopped_because = 'budget' after 5 model calls and 31 tool "
+            "calls, 0.0397 USD, no summary. Both runs: 0.0669 USD for nothing",
         ],
         caption=RUN + " Trace input tokens per call; call 6 is the "
                 "count_tokens figure (nb 04, 5.1).",
@@ -1015,11 +1021,11 @@ def slides():
              "a worker will list folders and read files for as long as it "
              "is allowed. Each call re-sends the previous tool results, so "
              "the bars grow, slowly while it lists and then in a jump when "
-             "it asks for fourteen files at once. The dashed line is the "
+             "it asks for ten files at once. The dashed line is the "
              "budget; the hatched bar is the call the harness measured with "
              "count_tokens and never sent. The text box is the other "
              "seatbelt, max_turns=4, which stopped a second run after four "
-             "calls. Neither produced a summary; together they cost about "
+             "calls. Neither produced a summary; together they cost under "
              "seven cents. A trace is how you notice a runaway before the "
              "invoice does. Class question: what would a smarter guard look "
              "at, so it could stop this task after the second call instead "
@@ -1032,24 +1038,24 @@ def slides():
         ["Architecture", "Model calls", "Tool calls", "Input tokens",
          "Output tokens", "Cost (USD)", "Answered", "USD per answer", "x solo"],
         [
-            ["Lead + workers", "9", "7", "10,081", "995", "0.0444", "3", "0.0148", "1.1"],
-            ["Solo agent", "3", "5", "5,702", "469", "0.0402", "3", "0.0134", "1.0"],
-            ["Orchestrator-workers", "12", "6", "12,519", "1,074", "0.0415", "3", "0.0138", "1.0"],
-            ["Team of 3 + lead", "17", "10", "24,611", "1,322", "0.0706", "6", "0.0118", "1.8"],
-            ["Handoff (research, then calculator)", "5", "3", "24,469", "242", "0.0514", "1", "0.0514", "1.3"],
-            ["Fresh calculator (for comparison)", "2", "1", "1,110", "71", "0.0029", "1", "0.0029", "0.1"],
-            ["Runaway prevention (two capped runs)", "10", "60", "18,958", "3,495", "0.0729", "0", "-", "1.8"],
+            ["Lead + workers", "9", "7", "10,583", "1,406", "0.0519", "3", "0.0173", "1.3"],
+            ["Solo agent", "3", "5", "5,713", "444", "0.0397", "3", "0.0132", "1.0"],
+            ["Orchestrator-workers", "9", "4", "9,008", "825", "0.0311", "3", "0.0104", "0.8"],
+            ["Team of 3 + lead", "17", "10", "24,967", "1,372", "0.0722", "6", "0.0120", "1.8"],
+            ["Handoff (research, then calculator)", "5", "3", "24,396", "210", "0.0509", "1", "0.0509", "1.3"],
+            ["Fresh calculator (for comparison)", "2", "1", "1,108", "69", "0.0029", "1", "0.0029", "0.1"],
+            ["Runaway prevention (two capped runs)", "9", "52", "18,466", "3,000", "0.0669", "0", "-", "1.7"],
         ],
         kicker="Notebook 04 - cost multiplication",
-        note="How to read it: one row per architecture, every model call it made, workers included. Compare USD per answer: flat at 0.0118 to 0.0148 except the handoff, whose two specialist calls each carried 7,017 inherited tokens. " + RUN,
+        note="How to read it: one row per architecture, every model call it made, workers included. USD per answer: 0.0104 (orchestrator) to 0.0173 (lead); the handoff's specialist calls carried 6,965 inherited tokens each. Recorded run on opus-5 and sonnet-5, 2 Oct 2026; live runs vary.",
         col_widths=[3.15, 1.0, 0.95, 1.15, 1.2, 1.05, 1.15, 1.25, 0.8],
     )
     notes(s, "Read the table with the 'answered' column in hand. The team "
              "answered six questions, the others the same three-part "
              "question, so the number to compare is the cost per answered "
-             "question - and in this run it was roughly flat everywhere, "
-             "between 1.2 and 1.5 cents, because every answer needs its own "
-             "listing, reading and writing. The team cost 1.8 times the "
+             "question - and in this run it ran from 1.0 cent for the "
+             "orchestrator to 1.7 for the lead, because every answer needs "
+             "its own listing, reading and writing. The team cost 1.8 times the "
              "solo agent for twice the questions. The one outlier is the "
              "handoff: five cents for a single answer, because the "
              "specialist carried the whole research conversation on both "

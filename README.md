@@ -6,7 +6,7 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-1E5EF3.svg)](requirements.txt)
 [![License: MIT](https://img.shields.io/badge/license-MIT-0A2540.svg)](LICENSE)
 
-A hands-on Python course for learning data analytics, machine learning and, in its newest module, harness engineering for AI agents, from zero. Four modules, thirteen notebooks, eight teaching decks, and one guiding principle: **keep it simple**. Every notebook balances short theory blocks with immediate practice, explains every technical term the first time it appears, and ends with exercises plus worked solutions.
+A hands-on Python course for learning data analytics, machine learning, natural language processing and harness engineering for AI agents, from zero. Five modules, fourteen notebooks, eight teaching decks, and one guiding principle: **keep it simple**. Every notebook balances short theory blocks with immediate practice, explains every technical term the first time it appears, and ends with exercises plus worked solutions.
 
 Everything runs **in Google Colab with one click** or **locally**. No accounts, no API keys, no configuration files. All datasets load automatically from public sources.
 
@@ -23,6 +23,8 @@ Everything runs **in Google Colab with one click** or **locally**. No accounts, 
 ## One dataset, nine notebooks
 
 Every module works the same passenger list: 891 passengers of the Titanic, twelve columns, 342 survivors. Module 1 cleans and describes it. Module 2 trains a model that predicts who survives and judges it honestly on rows it never saw (test accuracy 0.838). Module 3 puts that model behind an API, into a container, into the cloud, and into an application that calls it. Three real passengers, Owen, Florence and Frankie, return in every session so the numbers always have faces.
+
+Module 4 is the course's final project rather than a lesson. Students receive 3,450 tweets labelled ironic or not, build a classifier, predict a hidden test set and write up their findings; the data, the evaluation rules and a baseline are given, the model and the analysis are theirs.
 
 Module 5 leaves the ship. It teaches **harness engineering**: everything around a language model that turns it into a reliable agent. Its four notebooks and two hands-on labs use only real components: the official Anthropic SDK on Claude models, Claude Code itself for skills, MCP, subagents and agent teams, a small readable `harness/` package for the loop, hooks, permissions and traces, and an eval suite that runs in GitHub Actions. The agents read this repository's own files, so every answer they give can be checked by opening the file they cite. The module needs an `ANTHROPIC_API_KEY` in a git-ignored `.env` file; there is no simulated model.
 
@@ -56,6 +58,14 @@ Goes deeper: how machine learning fits into real tech architectures, how to run 
 | 2 | [Deploying models in the cloud](M3%20-%20ML%20Architectures%20and%20Deployment/02-deploying-models-in-the-cloud.ipynb) | Turning a model into a real prediction API with FastAPI, testing it before shipping, packaging it with Docker, and deploying the same container to Google Cloud Run and AWS App Runner, with step-by-step walkthroughs, cost hygiene and cleanup | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/maglionejm/fontys-tech-exercises/blob/main/M3%20-%20ML%20Architectures%20and%20Deployment/02-deploying-models-in-the-cloud.ipynb) |
 | 3 | [Consuming models from applications](M3%20-%20ML%20Architectures%20and%20Deployment/03-consuming-models-from-applications.ipynb) | The last mile: calling a model API from Python with timeouts, error handling and retries; batch prediction; a working web app that calls the model (usable inside Colab too); CORS; and how third-party AI APIs and their keys fit in. The notebook runs a real server and consumes it over real HTTP | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/maglionejm/fontys-tech-exercises/blob/main/M3%20-%20ML%20Architectures%20and%20Deployment/03-consuming-models-from-applications.ipynb) |
 
+### M4 - Natural Language Processing
+
+The final project: a text classification challenge on real tweets, graded on a hidden test set and on the quality of the work behind the score. Start with the one-page [guidelines](M4%20-%20Natural%20Language%20Processing/guidelines.pdf); the [module README](M4%20-%20Natural%20Language%20Processing/README.md) describes the files and the data.
+
+| # | Notebook | What you do | Open in Colab |
+|---|----------|-------------|---------------|
+| 1 | [Is this tweet ironic?](M4%20-%20Natural%20Language%20Processing/irony-final-project.ipynb) | Explore 3,450 labelled tweets, build and compare text classifiers on a clean validation protocol (TF-IDF, n-grams, linear models, optionally a pretrained transformer), read your model's mistakes, predict 1,151 hidden-test tweets and write a report. The baseline is given; beating it with evidence is the project | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/maglionejm/fontys-tech-exercises/blob/main/M4%20-%20Natural%20Language%20Processing/irony-final-project.ipynb) |
+
 ### M5 - Harness Engineering
 
 From prompt engineering to harness engineering: what sits around a model to make it an agent, and how to build it, on real components only. Notebooks 01 and 02 use the raw Anthropic SDK; notebooks 03 and 04 use the module's readable [`harness/`](M5%20-%20Harness%20Engineering/) package; two labs in [`lab/`](M5%20-%20Harness%20Engineering/lab/) run inside Claude Code. The module needs an Anthropic API key in a git-ignored `.env` (see the [module README](M5%20-%20Harness%20Engineering/README.md)). Four decks accompany the module in [`presentations/`](presentations/).
@@ -67,7 +77,7 @@ From prompt engineering to harness engineering: what sits around a model to make
 | 3 | [Building a harness](M5%20-%20Harness%20Engineering/03-building-a-harness.ipynb) | The `harness/` package: the agent loop and its stop conditions, hooks and permissions on real behaviour, the five workflow patterns, an eval suite over three harness configurations with trap cases, traces and the bill, evals in CI | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/maglionejm/fontys-tech-exercises/blob/main/M5%20-%20Harness%20Engineering/03-building-a-harness.ipynb) |
 | 4 | [Sub-agents, teams and the discipline](M5%20-%20Harness%20Engineering/04-sub-agents-teams-and-the-discipline.ipynb) | A lead that delegates to fresh workers versus a solo agent, orchestrator versus lead, a task board with a team of agents, handoffs, the failure modes measured on real usage, and the working discipline; plus the Claude Code lab on subagents, agent teams, hooks and permissions | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/maglionejm/fontys-tech-exercises/blob/main/M5%20-%20Harness%20Engineering/04-sub-agents-teams-and-the-discipline.ipynb) |
 
-Recommended order: M1, then M2, then M3, each top to bottom. M1 notebook 1, all of M2 and most of M3 use the same Titanic dataset, so concepts carry over naturally. M5 stands alone and can be taken after M2.
+Recommended order: M1, then M2, then M3, each top to bottom. M1 notebook 1, all of M2 and most of M3 use the same Titanic dataset, so concepts carry over naturally. M4 is the final project and assumes M2. M5 stands alone and can be taken after M2.
 
 ## Teaching decks
 
@@ -108,6 +118,7 @@ All datasets are small, public, and load automatically:
 - **Titanic passenger list** (891 rows), loaded from a public GitHub URL. Used in M1 notebook 1 and throughout M2 and M3.
 - **Palmer Penguins, tips, Anscombe's quartet**, loaded through `seaborn.load_dataset()`.
 - **Gapminder**, bundled with Plotly.
+- **SemEval-2018 irony tweets** (4,601 tweets, split into 3,450 labelled and 1,151 hidden-test), bundled in `M4 - Natural Language Processing/data/` and downloaded from there by the notebook when it runs elsewhere. Used in the M4 final project.
 
 ## Repository layout
 
@@ -116,6 +127,7 @@ fontys-tech-exercises/
 ├── M1 - Descriptive analytics/            3 notebooks
 ├── M2 - Machine Learning/                 3 notebooks
 ├── M3 - ML Architectures and Deployment/  3 notebooks
+├── M4 - Natural Language Processing/      the final project: starter notebook, guidelines.pdf, data/
 ├── M5 - Harness Engineering/              4 notebooks, 2 Claude Code labs, harness/ package, evals/, tests/
 ├── presentations/                         8 generated decks (M2, M5) + builders (src/)
 ├── docs/                                  the course site (GitHub Pages)

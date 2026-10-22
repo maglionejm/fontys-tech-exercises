@@ -38,6 +38,7 @@ jobs:
           - "M3 - ML Architectures and Deployment/01-ml-system-architectures.ipynb"
           - "M3 - ML Architectures and Deployment/02-deploying-models-in-the-cloud.ipynb"
           - "M3 - ML Architectures and Deployment/03-consuming-models-from-applications.ipynb"
+          - "M4 - Natural Language Processing/irony-final-project.ipynb"
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7

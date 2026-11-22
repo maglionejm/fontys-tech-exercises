@@ -1,4 +1,4 @@
-# M4 - Natural Language Processing
+# M3 - Natural Language Processing
 
 The final project of the course: a text classification challenge. You receive tweets labelled *ironic* or *not ironic*, build a model that tells them apart, predict a hidden test set, and write up what you did and what you found. There is no lesson notebook in this module; the project is the lesson.
 
@@ -16,7 +16,7 @@ The final project of the course: a text classification challenge. You receive tw
 
 **Google Colab, zero setup:** open the notebook with the badge below and choose Runtime > Run all. The setup cell downloads the two data files from this repository when they are not next to the notebook.
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/maglionejm/fontys-tech-exercises/blob/main/M4%20-%20Natural%20Language%20Processing/irony-final-project.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/maglionejm/fontys-tech-exercises/blob/main/M3%20-%20Natural%20Language%20Processing/irony-final-project.ipynb)
 
 **Locally:** clone the repository, install the course requirements (`pip install -r requirements.txt` from the repository root), and open the notebook from this folder so that `data/` is found. Everything in the given sections runs on a laptop CPU in well under a minute; no API keys, no accounts, no GPU. The optional pretrained-model route in section 7 is the only part where a Colab GPU helps.
 

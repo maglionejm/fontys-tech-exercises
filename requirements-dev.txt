@@ -2,9 +2,9 @@
 # decks, and linting. Students never need this file.
 -r requirements.txt
 nbformat>=5.11.1
-nbconvert>=7.17.1
-ipykernel>=7.3.0
+nbconvert>=7.17.2
+ipykernel>=7.4.0
 httpx>=0.28.1
 python-pptx>=1.0.2
-ruff>=0.16.8
-pytest>=8
+ruff>=0.17.3
+pytest>=9.2.0

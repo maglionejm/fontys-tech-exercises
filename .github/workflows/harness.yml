@@ -62,7 +62,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
       - name: Upload results.json
         if: env.ANTHROPIC_API_KEY != ''
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: harness-eval-results
           path: "M5 - Harness Engineering/results.json"

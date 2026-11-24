@@ -1,6 +1,16 @@
-# M4 - Generative AI: final project
+# M4 - Generative AI
 
-**Generative AI vs. traditional AI: a 1,500-word paper.** Explain how generative AI differs from traditional AI, and argue which approach suits a real-world problem you choose. This is the final deliverable of the Generative AI module. It is individual work, in English, handed in by email as described in section 5.
+This module has one lesson notebook and a final project.
+
+## Lesson notebook: retrieval-augmented generation
+
+[`01-retrieval-augmented-generation.ipynb`](01-retrieval-augmented-generation.ipynb) explains the basics of RAG and builds the smallest complete version of it over the course's own documents: why a language model needs retrieval, the five steps (chunk, embed, retrieve, augment, generate), keyword versus neural embeddings on the same corpus, how to measure retrieval with hit rate and MRR, and the design choices and failure modes, including prompt injection through documents. It needs no API key; the generation step calls a real model only when an `ANTHROPIC_API_KEY` is present and shows the prompt otherwise. Neural embeddings are used when `sentence-transformers` is installed (Colab installs it) and the notebook falls back to TF-IDF when it is not.
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/maglionejm/fontys-tech-exercises/blob/main/M4%20-%20Generative%20AI/01-retrieval-augmented-generation.ipynb)
+
+## Final project: Generative AI vs. traditional AI
+
+**A 1,500-word paper.** Explain how generative AI differs from traditional AI, and argue which approach suits a real-world problem you choose. This is the final deliverable of the Generative AI module. It is individual work, in English, handed in by email as described in section 5.
 
 This brief is built like an AI system: each section below is a stage in the pipeline. The one-page version is [`guidelines.pdf`](guidelines.pdf); a document template with the right headings and formatting is in [`paper-template.docx`](paper-template.docx) (also as [Markdown](paper-template.md)).
 

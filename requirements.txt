@@ -29,3 +29,7 @@ requests
 anthropic
 python-dotenv
 pyyaml
+
+# Optional for the Module 4 RAG notebook: neural embeddings (downloads a small model on first use).
+# Without it the notebook runs on TF-IDF embeddings. Colab installs it automatically.
+# sentence-transformers

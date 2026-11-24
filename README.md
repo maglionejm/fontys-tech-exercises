@@ -6,7 +6,7 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-1E5EF3.svg)](requirements.txt)
 [![License: MIT](https://img.shields.io/badge/license-MIT-0A2540.svg)](LICENSE)
 
-A hands-on Python course for learning data analytics, machine learning, natural language processing and harness engineering for AI agents, from zero. Five modules, fourteen notebooks, eight teaching decks, and one guiding principle: **keep it simple**. Every notebook balances short theory blocks with immediate practice, explains every technical term the first time it appears, and ends with exercises plus worked solutions.
+A hands-on Python course for learning data analytics, machine learning, natural language processing, generative AI and harness engineering for AI agents, from zero. Five modules, fifteen notebooks, eight teaching decks, and one guiding principle: **keep it simple**. Every notebook balances short theory blocks with immediate practice, explains every technical term the first time it appears, and ends with exercises plus worked solutions.
 
 Everything runs **in Google Colab with one click** or **locally**. No accounts, no API keys, no configuration files. All datasets load automatically from public sources.
 
@@ -67,6 +67,12 @@ The final project: a text classification challenge on real tweets, graded on a h
 | 1 | [Is this tweet ironic?](M3%20-%20Natural%20Language%20Processing/irony-final-project.ipynb) | Explore 3,450 labelled tweets, build and compare text classifiers on a clean validation protocol (TF-IDF, n-grams, linear models, optionally a pretrained transformer), read your model's mistakes, predict 1,151 hidden-test tweets and write a report. The baseline is given; beating it with evidence is the project | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/maglionejm/fontys-tech-exercises/blob/main/M3%20-%20Natural%20Language%20Processing/irony-final-project.ipynb) |
 
 ### M4 - Generative AI
+
+One lesson notebook and the module's final project.
+
+| # | Notebook | What you learn | Open in Colab |
+|---|----------|----------------|---------------|
+| 1 | [Retrieval-augmented generation: the basics](M4%20-%20Generative%20AI/01-retrieval-augmented-generation.ipynb) | Why a language model needs retrieval (closed book versus open book), the five steps of the pipeline (chunk, embed, retrieve, augment, generate) built over the course's own documents, keyword versus neural embeddings compared on the same corpus, hit rate and MRR with trap questions, the design choices and failure modes including prompt injection through documents; a real model answers in the last step when a key is present | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/maglionejm/fontys-tech-exercises/blob/main/M4%20-%20Generative%20AI/01-retrieval-augmented-generation.ipynb) |
 
 The final project of the Generative AI module is a paper, not a notebook: 1,500 words on how generative AI differs from traditional AI and which approach suits a real-world problem of the student's choice, with a documented use of a generative AI tool as an appendix. The brief is built like an AI pipeline (input, architecture, AI component, evaluation, deployment) and graded on a 100-point rubric.
 
@@ -138,7 +144,7 @@ fontys-tech-exercises/
 ├── M2 - Machine Learning/                 3 notebooks
 ├── M3 - ML Architectures and Deployment/  3 notebooks
 ├── M3 - Natural Language Processing/      final project 1: starter notebook, guidelines.pdf, data/
-├── M4 - Generative AI/                    final project 2: the paper brief, guidelines.pdf, paper template
+├── M4 - Generative AI/                    1 notebook (RAG basics) + final project 2: the paper brief, guidelines.pdf, paper template
 ├── M5 - Harness Engineering/              4 notebooks, 2 Claude Code labs, harness/ package, evals/, tests/
 ├── presentations/                         8 generated decks (M2, M5) + builders (src/)
 ├── docs/                                  the course site (GitHub Pages)
